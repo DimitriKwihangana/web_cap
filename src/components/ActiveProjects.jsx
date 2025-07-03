@@ -340,7 +340,7 @@ const ActiveProjectsManager = ({ onProjectUpdateTrigger }) => {
     <div className="bg-white p-6 rounded-xl shadow">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">🟢 Active Projects</h2>
+          <h2 className="text-2xl font-light text-gray-800">🟢 Active Projects</h2>
           <p className="text-sm text-gray-600 mt-1">
             {projects.length} active project{projects.length !== 1 ? 's' : ''} • {getTotalAssignedMembers()} team members assigned
           </p>

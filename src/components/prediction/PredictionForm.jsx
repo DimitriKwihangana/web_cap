@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { usePrediction } from '../../hooks/usePrediction'
 import { Zap, Activity, Target, AlertTriangle } from 'lucide-react'
 import Card from '../ui/Card'
@@ -22,7 +22,17 @@ export default function PredictionForm() {
   const [batchInfo, setBatchInfo] = useState({
     batchId: '',
     supplier: '',
-    date: new Date().toISOString().split('T')[0]
+    date: new Date().toISOString().split('T')[0],
+    // Include all formData parameters
+    moisture_maize_grain: '',
+    Immaturegrains: '',
+    Discolored_grains: '',
+    broken_kernels_percent_maize_grain: '',
+    foreign_matter_percent_maize_grain: '',
+    pest_damaged: '',
+    rotten: '',
+    Liveinfestation: 0,
+    abnormal_odours_maize_grain: 0
   })
 
   const inputFields = [
@@ -34,6 +44,30 @@ export default function PredictionForm() {
     { key: 'pest_damaged', label: 'Pest Damage (%)', icon: AlertTriangle, range: '0-25%' },
     { key: 'rotten', label: 'Rotten Grains (%)', icon: Activity, range: '0-10%' }
   ]
+
+  // Sync formData changes to batchInfo
+  useEffect(() => {
+    setBatchInfo(prevBatchInfo => ({
+      ...prevBatchInfo,
+      ...formData
+    }))
+  }, [formData])
+
+  // Update formData and let useEffect handle batchInfo sync
+  const handleFormDataChange = (key, value) => {
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      [key]: value
+    }))
+  }
+
+  // Update batch metadata (batchId, supplier, date)
+  const handleBatchMetadataChange = (key, value) => {
+    setBatchInfo(prevBatchInfo => ({
+      ...prevBatchInfo,
+      [key]: value
+    }))
+  }
 
   const handlePredict = async () => {
     const predictionData = {
@@ -55,34 +89,34 @@ export default function PredictionForm() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Aflatoxin Prediction</h1>
+        <h1 className="text-3xl font-light text-gray-900">Aflatoxin Prediction</h1>
         <p className="text-gray-600 mt-2">Enter maize grain characteristics to predict aflatoxin contamination</p>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
           <Card className="p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Sample Information</h2>
+            <h2 className="text-xl font-light text-gray-900 mb-6">Sample Information</h2>
             
             {/* Batch Information */}
             <div className="grid md:grid-cols-3 gap-4 mb-8 p-4 bg-gray-50 rounded-lg">
               <Input
                 label="Batch ID"
                 value={batchInfo.batchId}
-                onChange={(e) => setBatchInfo({...batchInfo, batchId: e.target.value})}
+                onChange={(e) => handleBatchMetadataChange('batchId', e.target.value)}
                 placeholder="MB-2025-001"
               />
               <Input
                 label="Supplier"
                 value={batchInfo.supplier}
-                onChange={(e) => setBatchInfo({...batchInfo, supplier: e.target.value})}
+                onChange={(e) => handleBatchMetadataChange('supplier', e.target.value)}
                 placeholder="Supplier name"
               />
               <Input
                 label="Test Date"
                 type="date"
                 value={batchInfo.date}
-                onChange={(e) => setBatchInfo({...batchInfo, date: e.target.value})}
+                onChange={(e) => handleBatchMetadataChange('date', e.target.value)}
               />
             </div>
 
@@ -98,7 +132,7 @@ export default function PredictionForm() {
                       step="0.01"
                       icon={field.icon}
                       value={formData[field.key]}
-                      onChange={(e) => setFormData({...formData, [field.key]: e.target.value})}
+                      onChange={(e) => handleFormDataChange(field.key, e.target.value)}
                       placeholder="0.00"
                     />
                     <p className="text-xs text-gray-500 mt-1">Range: {field.range}</p>
@@ -116,7 +150,7 @@ export default function PredictionForm() {
                         type="radio"
                         value="0"
                         checked={formData.Liveinfestation === 0}
-                        onChange={(e) => setFormData({...formData, Liveinfestation: parseInt(e.target.value)})}
+                        onChange={(e) => handleFormDataChange('Liveinfestation', parseInt(e.target.value))}
                         className="mr-2"
                       />
                       No
@@ -126,7 +160,7 @@ export default function PredictionForm() {
                         type="radio"
                         value="1"
                         checked={formData.Liveinfestation === 1}
-                        onChange={(e) => setFormData({...formData, Liveinfestation: parseInt(e.target.value)})}
+                        onChange={(e) => handleFormDataChange('Liveinfestation', parseInt(e.target.value))}
                         className="mr-2"
                       />
                       Yes
@@ -142,7 +176,7 @@ export default function PredictionForm() {
                         type="radio"
                         value="0"
                         checked={formData.abnormal_odours_maize_grain === 0}
-                        onChange={(e) => setFormData({...formData, abnormal_odours_maize_grain: parseInt(e.target.value)})}
+                        onChange={(e) => handleFormDataChange('abnormal_odours_maize_grain', parseInt(e.target.value))}
                         className="mr-2"
                       />
                       No
@@ -152,7 +186,7 @@ export default function PredictionForm() {
                         type="radio"
                         value="1"
                         checked={formData.abnormal_odours_maize_grain === 1}
-                        onChange={(e) => setFormData({...formData, abnormal_odours_maize_grain: parseInt(e.target.value)})}
+                        onChange={(e) => handleFormDataChange('abnormal_odours_maize_grain', parseInt(e.target.value))}
                         className="mr-2"
                       />
                       Yes

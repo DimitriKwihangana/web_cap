@@ -23,6 +23,7 @@ export const usePrediction = () => {
       const result = await response.json()
 
       if (response.ok) {
+        
         setResult(result)
         return { success: true, data: result }
       } else {

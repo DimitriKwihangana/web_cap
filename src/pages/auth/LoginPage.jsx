@@ -5,6 +5,7 @@ import { LogIn, Mail, Lock, Eye, EyeOff } from 'lucide-react'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
 import Card from '../../components/ui/Card'
+import axios from 'axios'
 
 export default function LoginPage() {
   const navigate = useNavigate()
@@ -18,31 +19,120 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
 
+  const validateForm = () => {
+    if (!formData.email) {
+      setError('Email is required')
+      return false
+    }
+    if (!formData.password) {
+      setError('Password is required')
+      return false
+    }
+    return true
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
+    
+    if (!validateForm()) return
+    
     setIsLoading(true)
     setError('')
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      
-      // Mock login success
-      login({
-        id: 1,
-        name: 'John Smith',
+      // Make API call to login endpoint
+      const response = await axios.post('https://back-cap.onrender.com/api/login', {
         email: formData.email,
-        type: 'institution',
-        organization: 'Rwanda Ministry of Education'
+        password: formData.password
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+        }
       })
-      
-      navigate('/dashboard')
+
+      if (response.data.status) {
+        // Prepare user information for storage
+        const userInfo = {
+          id: response.data.user._id,
+          name: response.data.user.username,
+          email: response.data.user.email,
+          type: response.data.user.type,
+          organization: response.data.user.organisation,
+          role: response.data.user.role,
+          position: response.data.user.position || '',
+          phone: response.data.user.phone || '',
+          location: response.data.user.location || '',
+          isVerified: response.data.user.isVerified
+        }
+        
+        // Save to localStorage
+        localStorage.setItem('user', JSON.stringify(userInfo))
+        localStorage.setItem('token', response.data.token)
+        localStorage.setItem('isAuthenticated', 'true')
+        
+        // Set token expiry time (1 hour from now)
+        const expiryTime = new Date().getTime() + (60 * 60 * 1000) // 1 hour
+        localStorage.setItem('tokenExpiry', expiryTime.toString())
+        
+        // Remember me functionality
+        if (formData.rememberMe) {
+          localStorage.setItem('rememberMe', 'true')
+          localStorage.setItem('rememberedEmail', formData.email)
+        } else {
+          localStorage.removeItem('rememberMe')
+          localStorage.removeItem('rememberedEmail')
+        }
+        
+        // Update app context
+        login(userInfo)
+        
+        // Navigate to dashboard
+        navigate('/dashboard')
+      } else {
+        setError(response.data.message || 'Login failed. Please try again.')
+      }
     } catch (err) {
-      setError('Invalid credentials. Please try again.')
+      console.error('Login error:', err)
+      
+      if (err.response && err.response.data) {
+        // Server responded with error
+        const errorMessage = err.response.data.message
+        
+        // Handle specific error cases
+        if (err.response.status === 404) {
+          setError('User not found. Please check your email or create an account.')
+        } else if (err.response.status === 403) {
+          setError('Please verify your email before logging in. Check your inbox for verification link.')
+        } else if (err.response.status === 400) {
+          setError('Invalid email or password. Please try again.')
+        } else {
+          setError(errorMessage || 'Login failed. Please try again.')
+        }
+      } else if (err.request) {
+        // Network error
+        setError('Network error. Please check your connection and try again.')
+      } else {
+        // Other error
+        setError('An unexpected error occurred. Please try again.')
+      }
     } finally {
       setIsLoading(false)
     }
   }
+
+  // Load remembered email on component mount
+  useState(() => {
+    const rememberMe = localStorage.getItem('rememberMe')
+    const rememberedEmail = localStorage.getItem('rememberedEmail')
+    
+    if (rememberMe === 'true' && rememberedEmail) {
+      setFormData(prev => ({
+        ...prev,
+        email: rememberedEmail,
+        rememberMe: true
+      }))
+    }
+  }, [])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center py-12">
@@ -52,7 +142,7 @@ export default function LoginPage() {
             <div className="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4">
               <LogIn className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900">Welcome Back</h1>
+            <h1 className="text-3xl font-light text-gray-900">Welcome Back</h1>
             <p className="text-gray-600 mt-2">Sign in to your AflaGuard Pro account</p>
           </div>
 
@@ -88,7 +178,9 @@ export default function LoginPage() {
             </div>
 
             {error && (
-              <div className="text-red-600 text-sm text-center">{error}</div>
+              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
+                {error}
+              </div>
             )}
 
             <div className="flex items-center justify-between">
@@ -107,7 +199,7 @@ export default function LoginPage() {
             </div>
 
             <Button type="submit" className="w-full" size="lg" loading={isLoading}>
-              Sign In
+              {isLoading ? 'Signing In...' : 'Sign In'}
             </Button>
           </form>
 
