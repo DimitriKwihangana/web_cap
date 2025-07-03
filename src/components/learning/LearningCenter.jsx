@@ -1,234 +1,228 @@
-import { useState } from 'react'
-import { Shield, Database, FlaskConical, FileText, Book, Award } from 'lucide-react'
-import Card from '../ui/Card'
-import Badge from '../ui/Badge'
-import Button from '../ui/Button'
-import ArticleCard from './ArticleCard'
+import { useState, useEffect } from 'react'
+import { Shield, Database, FlaskConical, FileText, Book, Award, Users, BookOpen, Star, Clock } from 'lucide-react'
 
 export default function LearningCenter() {
-  const [selectedCategory, setSelectedCategory] = useState('prevention')
+  const [courses, setCourses] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [selectedCategory, setSelectedCategory] = useState('all')
 
-  const categories = [
-    { key: 'prevention', label: 'Prevention Methods', icon: Shield },
-    { key: 'storage', label: 'Storage Best Practices', icon: Database },
-    { key: 'testing', label: 'Testing Procedures', icon: FlaskConical },
-    { key: 'regulations', label: 'Regulations & Standards', icon: FileText }
-  ]
+  useEffect(() => {
+    fetchCourses()
+  }, [])
 
-  const content = {
-    prevention: {
-      title: 'Aflatoxin Prevention in Maize',
-      description: 'Learn effective strategies to prevent aflatoxin contamination from field to storage',
-      articles: [
-        {
-          title: 'Pre-Harvest Prevention Strategies',
-          description: 'Learn how to prevent aflatoxin contamination during crop growth',
-          readTime: '8 min read',
-          level: 'Beginner',
-          image: '/images/prevention-1.jpg'
-        },
-        {
-          title: 'Harvest Timing and Techniques',
-          description: 'Optimal harvesting practices to minimize contamination risk',
-          readTime: '6 min read',
-          level: 'Intermediate',
-          image: '/images/harvest-1.jpg'
-        },
-        {
-          title: 'Field Management Best Practices',
-          description: 'Comprehensive field management to reduce aflatoxin risk',
-          readTime: '12 min read',
-          level: 'Advanced',
-          image: '/images/field-1.jpg'
-        }
-      ]
-    },
-    storage: {
-      title: 'Storage Best Practices',
-      description: 'Master the art of proper grain storage to maintain quality and safety',
-      articles: [
-        {
-          title: 'Moisture Control in Storage',
-          description: 'Maintaining optimal moisture levels to prevent fungal growth',
-          readTime: '10 min read',
-          level: 'Beginner',
-          image: '/images/storage-1.jpg'
-        },
-        {
-          title: 'Temperature Management',
-          description: 'Temperature control strategies for long-term storage',
-          readTime: '7 min read',
-          level: 'Intermediate',
-          image: '/images/temperature-1.jpg'
-        },
-        {
-          title: 'Storage Facility Design',
-          description: 'Designing storage facilities for maximum safety',
-          readTime: '15 min read',
-          level: 'Advanced',
-          image: '/images/facility-1.jpg'
-        }
-      ]
-    },
-    testing: {
-      title: 'Testing Procedures',
-      description: 'Comprehensive guide to aflatoxin testing methods and procedures',
-      articles: [
-        {
-          title: 'Sampling Techniques',
-          description: 'Proper sampling methods for accurate testing results',
-          readTime: '9 min read',
-          level: 'Beginner',
-          image: '/images/sampling-1.jpg'
-        },
-        {
-          title: 'Laboratory Testing Methods',
-          description: 'Overview of different aflatoxin testing methods',
-          readTime: '11 min read',
-          level: 'Intermediate',
-          image: '/images/lab-1.jpg'
-        },
-        {
-          title: 'Quality Control in Testing',
-          description: 'Ensuring accuracy and reliability in test results',
-          readTime: '13 min read',
-          level: 'Advanced',
-          image: '/images/quality-1.jpg'
-        }
-      ]
-    },
-    regulations: {
-      title: 'Regulations & Standards',
-      description: 'Navigate the complex world of food safety regulations and compliance',
-      articles: [
-        {
-          title: 'International Standards Overview',
-          description: 'Understanding global aflatoxin limits and regulations',
-          readTime: '8 min read',
-          level: 'Beginner',
-          image: '/images/standards-1.jpg'
-        },
-        {
-          title: 'Regional Compliance Requirements',
-          description: 'Specific requirements for different markets and regions',
-          readTime: '10 min read',
-          level: 'Intermediate',
-          image: '/images/compliance-1.jpg'
-        },
-        {
-          title: 'Certification and Documentation',
-          description: 'Managing compliance documentation and certifications',
-          readTime: '12 min read',
-          level: 'Advanced',
-          image: '/images/certification-1.jpg'
-        }
-      ]
+  const fetchCourses = async () => {
+    try {
+      const response = await fetch('https://trainingbackend-3447cabed34b.herokuapp.com/api/course/')
+      const data = await response.json()
+      if (data.status === 'success') {
+        setCourses(data.data)
+      }
+    } catch (error) {
+      console.error('Error fetching courses:', error)
+    } finally {
+      setLoading(false)
     }
   }
 
-  const currentContent = content[selectedCategory]
+  const categories = [
+    { key: 'all', label: 'All Courses', icon: Book },
+    { key: 'food', label: 'Food Safety', icon: Shield },
+    { key: 'safety', label: 'Safety Training', icon: FlaskConical },
+    { key: 'compliance', label: 'Compliance', icon: FileText }
+  ]
+
+  const getLevelColor = (level) => {
+    switch (level?.toLowerCase()) {
+      case 'beginner': return 'bg-emerald-50 text-emerald-700'
+      case 'intermediate': return 'bg-yellow-50 text-yellow-700'
+      case 'advanced': return 'bg-red-50 text-red-700'
+      default: return 'bg-emerald-50 text-emerald-700'
+    }
+  }
+
+  const getCategoryIcon = (category) => {
+    switch (category?.toLowerCase()) {
+      case 'food': return Shield
+      case 'business': return Database
+      case 'safety': return FlaskConical
+      default: return Book
+    }
+  }
+
+  const filteredCourses = selectedCategory === 'all' 
+    ? courses 
+    : courses.filter(course => course.category?.toLowerCase() === selectedCategory)
+
+  if (loading) {
+    return (
+      <div className="min-h-screen  flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto mb-4"></div>
+          <p className="text-gray-500 font-light">Loading courses...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Learning Center</h1>
-        <p className="text-gray-600 mt-2">Comprehensive resources for aflatoxin prevention and food safety</p>
-      </div>
-
-      <div className="grid lg:grid-cols-4 gap-8">
-        {/* Category Navigation */}
-        <div className="lg:col-span-1">
-          <Card className="p-4 sticky top-24">
-            <h2 className="font-semibold text-gray-900 mb-4">Categories</h2>
-            <div className="space-y-2">
-              {categories.map(category => (
-                <button
-                  key={category.key}
-                  onClick={() => setSelectedCategory(category.key)}
-                  className={`w-full flex items-center space-x-3 px-3 py-3 rounded-lg text-left transition-all ${
-                    selectedCategory === category.key 
-                      ? 'bg-blue-50 text-blue-600 border-l-4 border-blue-600' 
-                      : 'text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  <category.icon className="w-5 h-5" />
-                  <span className="text-sm font-medium">{category.label}</span>
-                </button>
-              ))}
-            </div>
-          </Card>
+    <div className="min-h-screen ">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <h1 className="text-4xl font-light bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">Learning Center</h1>
+          <p className="text-gray-500 mt-2 font-light text-lg">Comprehensive training resources for professional development</p>
         </div>
 
-        {/* Content Area */}
-        <div className="lg:col-span-3">
-          {/* Header */}
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">{currentContent.title}</h2>
-            <p className="text-gray-600">{currentContent.description}</p>
-          </div>
-
-          {/* Articles Grid */}
-          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6 mb-12">
-            {currentContent.articles.map((article, index) => (
-              <ArticleCard key={index} article={article} />
-            ))}
-          </div>
-
-          {/* Featured Resources */}
-          <div className="space-y-8">
-            <h3 className="text-xl font-semibold text-gray-900">Featured Resources</h3>
-            
-            <div className="grid md:grid-cols-2 gap-6">
-              <Card className="p-6 bg-gradient-to-r from-blue-50 to-green-50">
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Book className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-2">Complete Guide to Aflatoxin Prevention</h4>
-                    <p className="text-gray-600 text-sm mb-4">Comprehensive 50-page guide covering all aspects of aflatoxin prevention in maize production and storage.</p>
-                    <Button size="sm">
-                      Download PDF
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="p-6 bg-gradient-to-r from-green-50 to-blue-50">
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Award className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-2">Certification Program</h4>
-                    <p className="text-gray-600 text-sm mb-4">Get certified in aflatoxin prevention and testing procedures. Recognized by international food safety organizations.</p>
-                    <Button size="sm">
-                      Learn More
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-            </div>
-
-            {/* Video Resources */}
-            <div>
-              <h4 className="text-lg font-semibold text-gray-900 mb-4">Video Tutorials</h4>
-              <div className="grid md:grid-cols-3 gap-4">
-                {[
-                  { title: 'Visual Inspection Techniques', duration: '5:30', views: '2.1k' },
-                  { title: 'Proper Sampling Methods', duration: '8:45', views: '3.2k' },
-                  { title: 'Storage Best Practices', duration: '12:15', views: '1.8k' }
-                ].map((video, index) => (
-                  <Card key={index} className="p-4 hover:shadow-lg transition-shadow cursor-pointer">
-                    <div className="aspect-w-16 aspect-h-9 bg-gray-200 rounded-lg mb-3 h-32"></div>
-                    <h5 className="font-medium text-gray-900 mb-1">{video.title}</h5>
-                    <div className="flex items-center justify-between text-sm text-gray-600">
-                      <span>{video.duration}</span>
-                      <span>{video.views} views</span>
-                    </div>
-                  </Card>
+        <div className="grid lg:grid-cols-4 gap-8">
+          {/* Category Navigation */}
+          <div className="lg:col-span-1">
+            <div className="backdrop-blur-xl bg-white/20 rounded-2xl border border-white/30 p-6 shadow-2xl sticky top-24">
+              <h2 className="font-light text-gray-800 mb-6 text-lg">Categories</h2>
+              <div className="space-y-3">
+                {categories.map(category => (
+                  <button
+                    key={category.key}
+                    onClick={() => setSelectedCategory(category.key)}
+                    className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all duration-300 font-light ${
+                      selectedCategory === category.key 
+                        ? 'bg-gradient-to-r from-emerald-500/20 to-teal-500/20 backdrop-blur-sm border-l-4 border-emerald-500 text-emerald-700' 
+                        : 'text-gray-600 hover:bg-white/30 hover:backdrop-blur-sm'
+                    }`}
+                  >
+                    <category.icon className="w-5 h-5" />
+                    <span className="text-sm">{category.label}</span>
+                  </button>
                 ))}
               </div>
+            </div>
+          </div>
+
+          {/* Content Area */}
+          <div className="lg:col-span-3">
+            {/* Header */}
+            <div className="mb-8">
+              <h2 className="text-3xl font-light text-gray-800 mb-2">
+                {selectedCategory === 'all' ? 'All Available Courses' : categories.find(c => c.key === selectedCategory)?.label}
+              </h2>
+              <p className="text-gray-500 font-light">
+                {selectedCategory === 'all' 
+                  ? 'Explore our complete collection of professional training courses'
+                  : `Specialized training in ${categories.find(c => c.key === selectedCategory)?.label.toLowerCase()}`
+                }
+              </p>
+            </div>
+
+            {/* Courses Grid */}
+            <div className="grid md:grid-cols-2 xl:grid-cols-2 gap-8 mb-12">
+              {filteredCourses.map((course) => {
+                const IconComponent = getCategoryIcon(course.category)
+                return (
+                  <div key={course._id} className="backdrop-blur-xl bg-white/20 rounded-2xl border border-white/30 p-6 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-[1.02] group">
+                    <div className="flex items-start space-x-4 mb-4">
+                      <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-gradient-to-r from-emerald-500 to-teal-500">
+                        {course.image ? (
+                          <img 
+                            src={course.image} 
+                            alt={course.title}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                              e.target.nextSibling.style.display = 'flex';
+                            }}
+                          />
+                        ) : null}
+                        <div className={`w-full h-full ${course.image ? 'hidden' : 'flex'} items-center justify-center`}>
+                          <IconComponent className="w-8 h-8 text-white" />
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className={`px-3 py-1 text-xs font-light rounded-full ${getLevelColor(course.level)}`}>
+                            {course.level}
+                          </span>
+                          <span className="text-xs text-gray-400 font-light uppercase tracking-wide">
+                            {course.category}
+                          </span>
+                        </div>
+                        <h3 className="text-xl font-light text-gray-800 mb-2 group-hover:text-emerald-600 transition-colors">
+                          {course.title}
+                        </h3>
+                      </div>
+                    </div>
+                    
+                    <p className="text-gray-600 font-light leading-relaxed mb-6">
+                      {course.description}
+                    </p>
+
+                    <div className="flex items-center justify-between mb-6 text-sm text-gray-500 font-light">
+                      <div className="flex items-center space-x-4">
+                        <span className="flex items-center">
+                          <BookOpen className="w-4 h-4 mr-1" />
+                          {course.modules.length} modules
+                        </span>
+                        <span className="flex items-center">
+                          <Users className="w-4 h-4 mr-1" />
+                          {course.enrolledStudents.length} enrolled
+                        </span>
+                      </div>
+                      <div className="flex items-center text-yellow-400">
+                        <Star className="w-4 h-4 fill-current" />
+                        <Star className="w-4 h-4 fill-current" />
+                        <Star className="w-4 h-4 fill-current" />
+                        <Star className="w-4 h-4 fill-current" />
+                        <Star className="w-4 h-4" />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="text-2xl font-light text-emerald-600">
+                        ${(course.price / 100).toFixed(2)}
+                      </div>
+                      <button className="px-6 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 shadow-lg font-light">
+                        Enroll Now
+                      </button>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+
+            {/* Featured Resources */}
+            <div className="space-y-8">
+              <h3 className="text-2xl font-light text-gray-800">Featured Resources</h3>
+              
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="backdrop-blur-xl bg-white/20 rounded-2xl border border-white/30 p-6 shadow-2xl bg-gradient-to-r from-emerald-50/50 to-teal-50/50">
+                  <div className="flex items-start space-x-4">
+                    <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Book className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="font-light text-gray-800 mb-2 text-lg">Complete Training Guide</h4>
+                      <p className="text-gray-600 text-sm font-light mb-4 leading-relaxed">Comprehensive guide covering all aspects of professional development and training best practices.</p>
+                      <button className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 shadow-md font-light text-sm">
+                        Download PDF
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="backdrop-blur-xl bg-white/20 rounded-2xl border border-white/30 p-6 shadow-2xl bg-gradient-to-r from-teal-50/50 to-emerald-50/50">
+                  <div className="flex items-start space-x-4">
+                    <div className="w-12 h-12 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Award className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="font-light text-gray-800 mb-2 text-lg">Certification Program</h4>
+                      <p className="text-gray-600 text-sm font-light mb-4 leading-relaxed">Get certified in professional skills development. Recognized by international organizations.</p>
+                      <button className="px-4 py-2 bg-gradient-to-r from-teal-500 to-emerald-500 text-white rounded-lg hover:from-teal-600 hover:to-emerald-600 transition-all duration-300 shadow-md font-light text-sm">
+                        Learn More
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+             
             </div>
           </div>
         </div>
