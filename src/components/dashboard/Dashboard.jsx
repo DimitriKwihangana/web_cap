@@ -31,6 +31,22 @@ export default function Dashboard() {
     setSelectedBatch(null)
   }
 
+  // Handle batch updates from marketplace actions
+  const handleBatchUpdate = (updatedBatch) => {
+    // Update the batch in allBatches array
+    setAllBatches(prev => 
+      prev.map(batch => 
+        batch._id === updatedBatch._id ? updatedBatch : batch
+      )
+    )
+    
+    // Update the selected batch
+    setSelectedBatch(updatedBatch)
+    
+    // Refresh dashboard data to reflect changes
+    fetchDashboardData()
+  }
+
   // Calculate aflatoxin assessment
   const calculateAflatoxinAssessment = (aflatoxinLevel) => {
     const level = parseFloat(aflatoxinLevel) || 0
@@ -63,7 +79,11 @@ export default function Dashboard() {
         createdAt: batch.createdAt,
         // Include other fields that might be needed
         userId: batch.userId,
-        userName: batch.userName
+        userName: batch.userName,
+        // Include marketplace fields
+        isOnMarket: batch.isOnMarket,
+        availableQuantity: batch.availableQuantity,
+        pricePerKg: batch.pricePerKg
       }
     })
   }
@@ -94,6 +114,9 @@ export default function Dashboard() {
           return sum + (parseFloat(batch.aflatoxin) || 0)
         }, 0) / userBatches.length
       : 0
+
+    // Count batches on market (for owners)
+    const batchesOnMarket = userBatches.filter(batch => batch.isOnMarket).length
 
     return [
       { 
@@ -127,69 +150,54 @@ export default function Dashboard() {
     ]
   }
 
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      if (!user) {
-        setDashboardData(prev => ({ ...prev, loading: false }))
-        return
-      }
+  const fetchDashboardData = async () => {
+    if (!user) {
+      setDashboardData(prev => ({ ...prev, loading: false }))
+      return
+    }
 
-      try {
-        console.log('Fetching batches for user:', user)
+    try {
+      console.log('Fetching batches for user:', user)
+      
+      // Fetch all batches from API
+      const response = await fetch('https://back-cap.onrender.com/api/batches')
+      const apiData = await response.json()
+
+      if (apiData.success && apiData.data) {
+        console.log('API Response:', apiData)
         
-        // Fetch all batches from API
-        const response = await fetch('https://back-cap.onrender.com/api/batches')
-        const apiData = await response.json()
+        // Filter batches based on user type
+        // Admin users see all batches in the system
+        // Regular users only see their own batches
+        const userBatches = user.type === 'admin' 
+          ? apiData.data // Admin sees all batches
+          : apiData.data.filter(batch => 
+              batch.userId === user.id || 
+              batch.userName === user.email || 
+              batch.userName === user.username
+            )
 
-        if (apiData.success && apiData.data) {
-          console.log('API Response:', apiData)
-          
-          // Filter batches based on user type
-          // Admin users see all batches in the system
-          // Regular users only see their own batches
-          const userBatches = user.type === 'admin' 
-            ? apiData.data // Admin sees all batches
-            : apiData.data.filter(batch => 
-                batch.userId === user.id || 
-                batch.userName === user.email || 
-                batch.userName === user.username
-              )
+        console.log(user?.type === 'admin' ? 'Admin viewing all batches:' : 'User batches:', userBatches)
 
-          console.log(user?.type === 'admin' ? 'Admin viewing all batches:' : 'User batches:', userBatches)
+        // Store all user batches for detail modal
+        setAllBatches(userBatches)
 
-          // Store all user batches for detail modal
-          setAllBatches(userBatches)
+        // Transform batches to test format
+        const recentTests = transformBatchesToTests(userBatches)
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort by newest first
+          .slice(0, 10) // Get latest 10
 
-          // Transform batches to test format
-          const recentTests = transformBatchesToTests(userBatches)
-            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort by newest first
-            .slice(0, 10) // Get latest 10
+        // Calculate stats
+        const stats = calculateStats(userBatches)
 
-          // Calculate stats
-          const stats = calculateStats(userBatches)
-
-          setDashboardData({
-            stats,
-            recentTests,
-            loading: false
-          })
-        } else {
-          console.error('API Error:', apiData.message || 'Failed to fetch batches')
-          // Set empty data if API fails
-          setDashboardData({
-            stats: [
-              { label: user?.type === 'admin' ? 'Total Tests (All Users)' : 'Total Tests', value: '0', change: '0%', icon: 'FlaskConical', color: 'blue' },
-              { label: user?.type === 'admin' ? 'Safe for Children (All)' : 'Safe for Children', value: '0', change: '0%', icon: 'CheckCircle', color: 'green' },
-              { label: user?.type === 'admin' ? 'Alerts (System-wide)' : 'Alerts', value: '0', change: '0%', icon: 'AlertTriangle', color: 'red' },
-              { label: user?.type === 'admin' ? 'System Avg. Aflatoxin' : 'Avg. Aflatoxin', value: '0 ppb', change: '0%', icon: 'Target', color: 'purple' }
-            ],
-            recentTests: [],
-            loading: false
-          })
-        }
-      } catch (error) {
-        console.error('Error fetching dashboard data:', error)
-        // Set empty data on error
+        setDashboardData({
+          stats,
+          recentTests,
+          loading: false
+        })
+      } else {
+        console.error('API Error:', apiData.message || 'Failed to fetch batches')
+        // Set empty data if API fails
         setDashboardData({
           stats: [
             { label: user?.type === 'admin' ? 'Total Tests (All Users)' : 'Total Tests', value: '0', change: '0%', icon: 'FlaskConical', color: 'blue' },
@@ -201,8 +209,23 @@ export default function Dashboard() {
           loading: false
         })
       }
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error)
+      // Set empty data on error
+      setDashboardData({
+        stats: [
+          { label: user?.type === 'admin' ? 'Total Tests (All Users)' : 'Total Tests', value: '0', change: '0%', icon: 'FlaskConical', color: 'blue' },
+          { label: user?.type === 'admin' ? 'Safe for Children (All)' : 'Safe for Children', value: '0', change: '0%', icon: 'CheckCircle', color: 'green' },
+          { label: user?.type === 'admin' ? 'Alerts (System-wide)' : 'Alerts', value: '0', change: '0%', icon: 'AlertTriangle', color: 'red' },
+          { label: user?.type === 'admin' ? 'System Avg. Aflatoxin' : 'Avg. Aflatoxin', value: '0 ppb', change: '0%', icon: 'Target', color: 'purple' }
+        ],
+        recentTests: [],
+        loading: false
+      })
     }
+  }
 
+  useEffect(() => {
     fetchDashboardData()
   }, [user])
 
@@ -260,11 +283,13 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Batch Detail Modal */}
+      {/* Enhanced Batch Detail Modal with Marketplace */}
       <BatchDetailModal 
         isOpen={showBatchDetail}
         onClose={closeBatchDetail}
         batch={selectedBatch}
+        user={user}
+        onBatchUpdate={handleBatchUpdate}
       />
     </div>
   )

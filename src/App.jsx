@@ -9,6 +9,7 @@ import PredictPage from './pages/PredictPage'
 import LearnPage from './pages/LearnPage'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import FineTunePage from './pages/FinetuningPage'
+import MarketplacePage from './pages/MarketPlace'
 
 function App() {
   return (
@@ -21,6 +22,11 @@ function App() {
           <Route path="/dashboard" element={
             <ProtectedRoute>
               <DashboardPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/marketplace" element={
+            <ProtectedRoute>
+              <MarketplacePage />
             </ProtectedRoute>
           } />
             <Route path="/finetune" element={

@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { Zap, FileText, Database, Book, Brain, Settings, Users, Shield } from 'lucide-react'
+import { Zap, FileText, Database, Book, Brain, Settings, Users, Shield, ShoppingCart } from 'lucide-react'
 import Button from '../ui/Button'
 import { useApp } from '../../contexts/AppContext'
 
@@ -20,6 +20,16 @@ export default function QuickActions() {
   // Conditional actions based on user type
   const getConditionalActions = () => {
     const conditionalActions = []
+
+    // Add marketplace for processor, admin, or institution users
+    if (user?.type === 'processor' || user?.type === 'admin' || user?.type === 'institution') {
+      conditionalActions.push({
+        icon: ShoppingCart,
+        label: 'Marketplace',
+        href: '/marketplace',
+        className: 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 border-emerald-500'
+      })
+    }
 
     // Add retraining model card for laboratory or admin users
     if (user?.type === 'laboratory' || user?.type === 'admin') {
@@ -104,6 +114,18 @@ export default function QuickActions() {
             <Shield className="w-4 h-4 text-emerald-600" />
             <span className="text-sm text-emerald-700 font-medium">
               {user?.type === 'admin' ? 'Administrator Access' : 'Laboratory Access'}
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Marketplace access indicator */}
+      {(user?.type === 'processor' || user?.type === 'institution') && (
+        <div className="mt-6 p-3 bg-gradient-to-r from-emerald-50/80 to-green-50/80 rounded-xl border border-emerald-200/50 backdrop-blur-sm">
+          <div className="flex items-center space-x-2">
+            <ShoppingCart className="w-4 h-4 text-emerald-600" />
+            <span className="text-sm text-emerald-700 font-medium">
+              {user?.type === 'processor' ? 'Grain Processor Access' : 'Institution Access'}
             </span>
           </div>
         </div>

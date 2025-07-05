@@ -1,8 +1,24 @@
 import { useState } from 'react'
-import { X, Calendar, User, Building, Droplets, AlertTriangle } from 'lucide-react'
+import { X, Calendar, User, Building, Droplets, AlertTriangle, ShoppingCart, DollarSign, Package, CheckCircle, XCircle } from 'lucide-react'
 
-export default function BatchDetailModal({ isOpen, onClose, batch }) {
+export default function BatchDetailModal({ isOpen, onClose, batch, user, onBatchUpdate }) {
+  const [isMarketplaceOpen, setIsMarketplaceOpen] = useState(false)
+  const [marketplaceForm, setMarketplaceForm] = useState({
+    quantity: '',
+    pricePerKg: ''
+  })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [marketplaceError, setMarketplaceError] = useState('')
+  const [marketplaceSuccess, setMarketplaceSuccess] = useState('')
+
   if (!isOpen || !batch) return null
+
+  // Check if current user owns this batch
+  const isOwner = user && (
+    batch.userId === user.id || 
+    batch.userName === user.email || 
+    batch.userName === user.username
+  )
 
   // Calculate aflatoxin assessment
   const calculateAflatoxinAssessment = (aflatoxinLevel) => {
@@ -88,6 +104,100 @@ export default function BatchDetailModal({ isOpen, onClose, batch }) {
     })
   }
 
+  // Handle marketplace form input changes
+  const handleMarketplaceChange = (e) => {
+    const { name, value } = e.target
+    setMarketplaceForm(prev => ({
+      ...prev,
+      [name]: value
+    }))
+    // Clear errors when user starts typing
+    if (marketplaceError) setMarketplaceError('')
+  }
+
+  // Handle putting batch on market
+  const handlePutOnMarket = async (e) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    setMarketplaceError('')
+    setMarketplaceSuccess('')
+
+    try {
+      // Validate form
+      if (!marketplaceForm.quantity || parseFloat(marketplaceForm.quantity) <= 0) {
+        throw new Error('Please enter a valid quantity')
+      }
+      if (!marketplaceForm.pricePerKg || parseFloat(marketplaceForm.pricePerKg) <= 0) {
+        throw new Error('Please enter a valid price per kg')
+      }
+
+      const response = await fetch(`http://localhost:5000/api/batches/${batch._id}/market`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          quantity: parseFloat(marketplaceForm.quantity),
+          pricePerKg: parseFloat(marketplaceForm.pricePerKg)
+        })
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setMarketplaceSuccess('Batch successfully listed on marketplace!')
+        setIsMarketplaceOpen(false)
+        setMarketplaceForm({ quantity: '', pricePerKg: '' })
+        
+        // Call parent callback to refresh data if provided
+        if (onBatchUpdate) {
+          onBatchUpdate(data.data)
+        }
+      } else {
+        throw new Error(data.message || 'Failed to list batch on market')
+      }
+    } catch (error) {
+      console.error('Error listing batch on market:', error)
+      setMarketplaceError(error.message)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  // Handle removing batch from market
+  const handleRemoveFromMarket = async () => {
+    setIsSubmitting(true)
+    setMarketplaceError('')
+    setMarketplaceSuccess('')
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/batches/${batch._id}/market`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setMarketplaceSuccess('Batch removed from marketplace!')
+        
+        // Call parent callback to refresh data if provided
+        if (onBatchUpdate) {
+          onBatchUpdate(data.data)
+        }
+      } else {
+        throw new Error(data.message || 'Failed to remove batch from market')
+      }
+    } catch (error) {
+      console.error('Error removing batch from market:', error)
+      setMarketplaceError(error.message)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop overlay with glass effect */}
@@ -117,6 +227,25 @@ export default function BatchDetailModal({ isOpen, onClose, batch }) {
 
         {/* Scrollable Content */}
         <div className="overflow-y-auto max-h-[calc(90vh-180px)] px-8 py-6">
+          {/* Success/Error Messages */}
+          {marketplaceSuccess && (
+            <div className="mb-6 p-4 bg-green-50/80 border border-green-200/50 rounded-2xl backdrop-blur-sm">
+              <div className="flex items-center">
+                <CheckCircle className="w-5 h-5 text-green-600 mr-3" />
+                <p className="text-green-700 font-medium">{marketplaceSuccess}</p>
+              </div>
+            </div>
+          )}
+
+          {marketplaceError && (
+            <div className="mb-6 p-4 bg-red-50/80 border border-red-200/50 rounded-2xl backdrop-blur-sm">
+              <div className="flex items-center">
+                <XCircle className="w-5 h-5 text-red-600 mr-3" />
+                <p className="text-red-700 font-medium">{marketplaceError}</p>
+              </div>
+            </div>
+          )}
+
           {/* Hero Section - Aflatoxin Assessment */}
           <div className="mb-8">
             <div className={`relative p-8 rounded-3xl border ${colors.border} ${colors.bg} backdrop-blur-sm shadow-2xl ${colors.glow}`}>
@@ -137,6 +266,144 @@ export default function BatchDetailModal({ isOpen, onClose, batch }) {
               </div>
             </div>
           </div>
+
+          {/* Marketplace Section */}
+          {isOwner && (
+            <div className="mb-8">
+              <div className="bg-white/40 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-lg">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xl font-light text-gray-900 flex items-center">
+                    <ShoppingCart className="w-5 h-5 mr-3 text-blue-600" />
+                    Marketplace
+                  </h3>
+                  
+                  {/* Market Status Badge */}
+                  {batch.isOnMarket ? (
+                    <div className="flex items-center space-x-3">
+                      <div className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium text-green-700 bg-green-100/80 border border-green-200/50">
+                        <CheckCircle className="w-4 h-4 mr-2" />
+                        Listed on Market
+                      </div>
+                      {batch.availableQuantity > 0 && (
+                        <span className="text-sm text-gray-600">
+                          {batch.availableQuantity}kg available at ${batch.pricePerKg}/kg
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium text-gray-600 bg-gray-100/80 border border-gray-200/50">
+                      <Package className="w-4 h-4 mr-2" />
+                      Not Listed
+                    </div>
+                  )}
+                </div>
+
+                {/* Market Actions */}
+                {!batch.isOnMarket && (
+                  <div>
+                    {!isMarketplaceOpen ? (
+                      <button
+                        onClick={() => setIsMarketplaceOpen(true)}
+                        className="w-full py-3 px-6 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-2xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-medium shadow-lg hover:shadow-xl backdrop-blur-sm flex items-center justify-center"
+                      >
+                        <ShoppingCart className="w-5 h-5 mr-2" />
+                        List on Marketplace
+                      </button>
+                    ) : (
+                      <form onSubmit={handlePutOnMarket} className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Quantity (kg)
+                            </label>
+                            <div className="relative">
+                              <Package className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                              <input
+                                type="number"
+                                name="quantity"
+                                value={marketplaceForm.quantity}
+                                onChange={handleMarketplaceChange}
+                                placeholder="Enter quantity in kg"
+                                className="w-full pl-11 pr-4 py-3 bg-white/50 border border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 backdrop-blur-sm"
+                                step="0.1"
+                                min="0.1"
+                                required
+                              />
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Price per kg ($)
+                            </label>
+                            <div className="relative">
+                              <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                              <input
+                                type="number"
+                                name="pricePerKg"
+                                value={marketplaceForm.pricePerKg}
+                                onChange={handleMarketplaceChange}
+                                placeholder="Enter price per kg"
+                                className="w-full pl-11 pr-4 py-3 bg-white/50 border border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 backdrop-blur-sm"
+                                step="0.01"
+                                min="0.01"
+                                required
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex space-x-3">
+                          <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="flex-1 py-3 px-6 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-2xl hover:from-green-700 hover:to-green-800 transition-all duration-200 font-medium shadow-lg hover:shadow-xl backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {isSubmitting ? 'Listing...' : 'List on Market'}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setIsMarketplaceOpen(false)
+                              setMarketplaceForm({ quantity: '', pricePerKg: '' })
+                              setMarketplaceError('')
+                            }}
+                            className="py-3 px-6 bg-gray-500 text-white rounded-2xl hover:bg-gray-600 transition-all duration-200 font-medium shadow-lg hover:shadow-xl backdrop-blur-sm"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </form>
+                    )}
+                  </div>
+                )}
+
+                {/* Remove from Market */}
+                {batch.isOnMarket && (
+                  <div className="space-y-4">
+                    <div className="p-4 bg-blue-50/50 rounded-xl border border-blue-200/50">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-blue-800">Market Listing Details</p>
+                          <p className="text-blue-600">
+                            {batch.availableQuantity}kg available • ${batch.pricePerKg}/kg • 
+                            Total value: ${(batch.availableQuantity * batch.pricePerKg).toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      onClick={handleRemoveFromMarket}
+                      disabled={isSubmitting}
+                      className="w-full py-3 px-6 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-2xl hover:from-red-700 hover:to-red-800 transition-all duration-200 font-medium shadow-lg hover:shadow-xl backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isSubmitting ? 'Removing...' : 'Remove from Market'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Basic Information and Metadata */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -203,6 +470,24 @@ export default function BatchDetailModal({ isOpen, onClose, batch }) {
                 <div className="p-4 bg-white/50 rounded-xl backdrop-blur-sm">
                   <p className="text-sm font-medium text-gray-500 mb-2">Last Updated</p>
                   <p className="text-lg font-light text-gray-900">{formatDateTime(batch.updatedAt)}</p>
+                </div>
+
+                {/* Show ownership indicator */}
+                <div className="p-4 bg-white/50 rounded-xl backdrop-blur-sm">
+                  <p className="text-sm font-medium text-gray-500 mb-2">Ownership</p>
+                  <div className="flex items-center">
+                    {isOwner ? (
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-green-700 bg-green-100/80">
+                        <CheckCircle className="w-4 h-4 mr-2" />
+                        You own this batch
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-gray-600 bg-gray-100/80">
+                        <User className="w-4 h-4 mr-2" />
+                        Owned by {batch.userName}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

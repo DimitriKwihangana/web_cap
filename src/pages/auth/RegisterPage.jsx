@@ -28,7 +28,8 @@ export default function RegisterPage() {
   const userTypes = [
     { value: 'institution', label: 'Institution (Schools, Prisons, Bulk Buyers)', icon: Building },
     { value: 'processor', label: 'Food Processor', icon: Award },
-    { value: 'laboratory', label: 'Laboratory/Research Facility', icon: User }
+    { value: 'laboratory', label: 'Laboratory/Research Facility', icon: User },
+    { value: 'cooperative', label: 'Cooperatives/ Big Farmer(farmer)', icon: Building },
   ]
 
   const validateForm = () => {
@@ -143,9 +144,9 @@ export default function RegisterPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-light text-gray-700 mb-3">Organization Type</label>
-              <div className="grid gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 {userTypes.map(type => (
-                  <label key={type.value} className="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
+                  <label key={type.value} className="flex items-center p-2 border rounded-lg cursor-pointer hover:bg-gray-50">
                     <input
                       type="radio"
                       value={type.value}
