@@ -25,8 +25,8 @@ export default function QuickActions() {
     if (user?.type === 'laboratory' || user?.type === 'admin') {
       conditionalActions.push({
         icon: Brain,
-        label: 'Retrain Model',
-        href: '/retrain-model',
+        label: 'Fine-tune Model',
+        href: '/finetune',
         className: 'bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:from-purple-600 hover:to-purple-700 border-purple-500'
       })
     }

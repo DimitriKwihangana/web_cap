@@ -8,6 +8,7 @@ import DashboardPage from './pages/DashboardPage'
 import PredictPage from './pages/PredictPage'
 import LearnPage from './pages/LearnPage'
 import ProtectedRoute from './components/auth/ProtectedRoute'
+import FineTunePage from './pages/FinetuningPage'
 
 function App() {
   return (
@@ -20,6 +21,11 @@ function App() {
           <Route path="/dashboard" element={
             <ProtectedRoute>
               <DashboardPage />
+            </ProtectedRoute>
+          } />
+            <Route path="/finetune" element={
+            <ProtectedRoute>
+              <FineTunePage />
             </ProtectedRoute>
           } />
           <Route path="/predict" element={
