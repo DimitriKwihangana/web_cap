@@ -62,7 +62,7 @@ export default function FineTunePage() {
     formData.append('file', file)
 
     try {
-      const response = await fetch('https://model-api-capstone.onrender.com/fine-tune', {
+      const response = await fetch('https://model-api-capstone.onrender.com/fine_tune', {
         method: 'POST',
         body: formData,
       })
