@@ -256,3 +256,6 @@ yarn preview
 ### Youtube Demonstration
 
 Link [https://youtu.be/KsuU9YPl_xU](https://youtu.be/KsuU9YPl_xU)
+
+### Deployed link
+Link [https://aflaguard.netlify.app](https://aflaguard.netlify.app)
