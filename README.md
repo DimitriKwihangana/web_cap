@@ -275,51 +275,7 @@ yarn preview
 
 ## 🌍 Internationalization
 
-Future support for multiple languages:
-- English (default)
-- French
-- Spanish
-- Swahili
-- Portuguese
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Development Guidelines
-- Follow the existing code style
-- Write meaningful commit messages
-- Update documentation as needed
-- Test your changes thoroughly
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🆘 Support
-
-### Documentation
-- [React Documentation](https://react.dev/)
-- [Vite Documentation](https://vitejs.dev/)
-- [Tailwind CSS Documentation](https://tailwindcss.com/)
-- [React Router Documentation](https://reactrouter.com/)
-
-### Contact
-- **Email**: support@aflaguard.com
-- **Phone**: +1-800-AFLA-GUARD
-- **Website**: https://aflaguard.com
-- **Issues**: [GitHub Issues](https://github.com/your-username/aflaguard-pro/issues)
-
-## 🏆 Acknowledgments
-
-- **Machine Learning API**: Powered by advanced AI algorithms
-- **Design Inspiration**: Modern food safety applications
-- **Open Source Libraries**: React, Vite, Tailwind CSS
-- **Icons**: Lucide React icon library
 
 ## 🔄 Changelog
 
@@ -331,16 +287,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Learning center with educational content
 - Responsive design and modern UI
 
-### Planned Features
-- Real-time notifications
-- Advanced analytics and reporting
-- Multi-language support
-- Integration with additional ML models
-- Batch processing capabilities
-- Mobile responsiveness improvements
 
 ---
 
-**AflaGuard Pro** - Protecting food safety through advanced technology 🛡️
+**AflaGuard Pro** - Protecting food safety through advanced technology 🛡
 
-Built with ❤️ using React, Vite, and Tailwind CSS# web_cap
