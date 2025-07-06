@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Shield, Database, FlaskConical, FileText, Book, Award, Users, BookOpen, Star, Clock } from 'lucide-react'
+import { Shield, Database, FlaskConical, FileText, Book, Award, Users, BookOpen, Star, Clock, Download } from 'lucide-react'
 
 export default function LearningCenter() {
   const [courses, setCourses] = useState([])
@@ -12,7 +12,7 @@ export default function LearningCenter() {
 
   const fetchCourses = async () => {
     try {
-      const response = await fetch('https://trainingbackend-3447cabed34b.herokuapp.com/api/course/')
+      const response = await fetch('https://trainingbackend-3447cabed34b.herokuapp.om/api/course/')
       const data = await response.json()
       if (data.status === 'success') {
         setCourses(data.data)
@@ -22,6 +22,15 @@ export default function LearningCenter() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handlePdfDownload = (pdfName, fileName) => {
+    const link = document.createElement('a')
+    link.href = `/public/${pdfName}`
+    link.download = fileName
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
   }
 
   const categories = [
@@ -175,7 +184,7 @@ export default function LearningCenter() {
 
                     <div className="flex items-center justify-between">
                       <div className="text-2xl font-light text-emerald-600">
-                        ${(course.price / 100).toFixed(2)}
+                        {(course.price / 1).toFixed(2)} Rwf
                       </div>
                       <button className="px-6 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 shadow-lg font-light">
                         Enroll Now
@@ -194,13 +203,17 @@ export default function LearningCenter() {
                 <div className="backdrop-blur-xl bg-white/20 rounded-2xl border border-white/30 p-6 shadow-2xl bg-gradient-to-r from-emerald-50/50 to-teal-50/50">
                   <div className="flex items-start space-x-4">
                     <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Book className="w-6 h-6 text-white" />
+                      <FlaskConical className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <h4 className="font-light text-gray-800 mb-2 text-lg">Complete Training Guide</h4>
-                      <p className="text-gray-600 text-sm font-light mb-4 leading-relaxed">Comprehensive guide covering all aspects of professional development and training best practices.</p>
-                      <button className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 shadow-md font-light text-sm">
-                        Download PDF
+                      <h4 className="font-light text-gray-800 mb-2 text-lg">Sampling Guide for Grains</h4>
+                      <p className="text-gray-600 text-sm font-light mb-4 leading-relaxed">Comprehensive guide on proper grain sampling techniques, quality assessment methods, and best practices for accurate results in agricultural testing.</p>
+                      <button 
+                        onClick={() => handlePdfDownload('1.pdf', 'Sampling_Guide_for_Grains.pdf')}
+                        className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 shadow-md font-light text-sm flex items-center space-x-2"
+                      >
+                        <Download className="w-4 h-4" />
+                        <span>Download PDF</span>
                       </button>
                     </div>
                   </div>
@@ -212,17 +225,19 @@ export default function LearningCenter() {
                       <Award className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <h4 className="font-light text-gray-800 mb-2 text-lg">Certification Program</h4>
-                      <p className="text-gray-600 text-sm font-light mb-4 leading-relaxed">Get certified in professional skills development. Recognized by international organizations.</p>
-                      <button className="px-4 py-2 bg-gradient-to-r from-teal-500 to-emerald-500 text-white rounded-lg hover:from-teal-600 hover:to-emerald-600 transition-all duration-300 shadow-md font-light text-sm">
-                        Learn More
+                      <h4 className="font-light text-gray-800 mb-2 text-lg">Physical Components Testing</h4>
+                      <p className="text-gray-600 text-sm font-light mb-4 leading-relaxed">Detailed manual covering physical component analysis, testing procedures, equipment specifications, and quality control measures for grain evaluation.</p>
+                      <button 
+                        onClick={() => handlePdfDownload('2.pdf', 'Physical_Components_Testing.pdf')}
+                        className="px-4 py-2 bg-gradient-to-r from-teal-500 to-emerald-500 text-white rounded-lg hover:from-teal-600 hover:to-emerald-600 transition-all duration-300 shadow-md font-light text-sm flex items-center space-x-2"
+                      >
+                        <Download className="w-4 h-4" />
+                        <span>Download PDF</span>
                       </button>
                     </div>
                   </div>
                 </div>
               </div>
-
-             
             </div>
           </div>
         </div>

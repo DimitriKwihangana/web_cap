@@ -43,17 +43,17 @@ const UpdateCollectorModal = ({ isOpen, onClose, collector, refresh }) => {
       });
 
       if (response.ok) {
-        alert('✅ Member updated successfully!');
+        alert('Member updated successfully!');
         refresh(); // Refresh the table
         onClose();
       } else {
         const error = await response.json();
         console.error("Update failed:", error);
-        alert('❌ Failed to update member.');
+        alert('Failed to update member.');
       }
     } catch (err) {
       console.error('API error:', err);
-      alert('❌ Network error occurred.');
+      alert(' Network error occurred.');
     }
   };
 
@@ -92,8 +92,6 @@ const UpdateCollectorModal = ({ isOpen, onClose, collector, refresh }) => {
               />
             </div>
           ))}
-
-          {/* Experience Level */}
           <div>
             <label className="block text-sm font-medium mb-1">Experience Level</label>
             <select
@@ -109,7 +107,6 @@ const UpdateCollectorModal = ({ isOpen, onClose, collector, refresh }) => {
             </select>
           </div>
 
-          {/* Status */}
           <div>
             <label className="block text-sm font-medium mb-1">Status</label>
             <select
