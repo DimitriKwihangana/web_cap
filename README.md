@@ -253,42 +253,6 @@ yarn preview
 - `npm run preview` - Preview production build
 - `npm run lint` - Run ESLint
 
-### Code Quality
-- ESLint configuration for React
-- Prettier for code formatting (recommended)
-- Modern ES6+ syntax
-- Functional components with hooks
+### Youtube Demonstration
 
-## 📈 Performance Optimization
-
-### Built-in Optimizations
-- Vite's fast HMR and bundling
-- React 18 features
-- Lazy loading for routes
-- Optimized bundle splitting
-
-### Custom Optimizations
-- Component lazy loading
-- Debounced search inputs
-- Optimized re-renders
-- Efficient state management
-
-## 🌍 Internationalization
-
-
-
-## 🔄 Changelog
-
-### Version 1.0.0 (Current)
-- Initial release with Vite + React
-- Multi-role authentication system
-- AI-powered prediction engine
-- Comprehensive dashboard
-- Learning center with educational content
-- Responsive design and modern UI
-
-
----
-
-**AflaGuard Pro** - Protecting food safety through advanced technology 🛡
-
+Link [https://youtu.be/KsuU9YPl_xU](https://youtu.be/KsuU9YPl_xU)
