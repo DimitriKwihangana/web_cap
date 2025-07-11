@@ -286,7 +286,7 @@ export default function BatchDetailModal({ isOpen, onClose, batch, user, onBatch
                       </div>
                       {batch.availableQuantity > 0 && (
                         <span className="text-sm text-gray-600">
-                          {batch.availableQuantity}kg available at ${batch.pricePerKg}/kg
+                          {batch.availableQuantity}kg available at {batch.pricePerKg}Rwf/kg
                         </span>
                       )}
                     </div>
@@ -334,7 +334,7 @@ export default function BatchDetailModal({ isOpen, onClose, batch, user, onBatch
                           
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                              Price per kg ($)
+                              Price per kg (Rwf)
                             </label>
                             <div className="relative">
                               <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -386,8 +386,8 @@ export default function BatchDetailModal({ isOpen, onClose, batch, user, onBatch
                         <div>
                           <p className="text-sm font-medium text-blue-800">Market Listing Details</p>
                           <p className="text-blue-600">
-                            {batch.availableQuantity}kg available • ${batch.pricePerKg}/kg • 
-                            Total value: ${(batch.availableQuantity * batch.pricePerKg).toFixed(2)}
+                            {batch.availableQuantity}kg available • {batch.pricePerKg}Rwf/kg • 
+                            Total value: {(batch.availableQuantity * batch.pricePerKg).toFixed(2)}Rwf
                           </p>
                         </div>
                       </div>

@@ -128,7 +128,7 @@ export default function MarketplacePage() {
       const data = await response.json()
 
       if (data.success) {
-        setOrderSuccess(`Order placed successfully! Total: $${data.data.purchaseDetails.totalAmount.toFixed(2)}`)
+        setOrderSuccess(`Order placed successfully! Total: Rwf${data.data.purchaseDetails.totalAmount.toFixed(2)}`)
         setShowOrderModal(false)
         setOrderForm({
           quantity: '',
@@ -340,7 +340,7 @@ export default function MarketplacePage() {
                       <div className="grid grid-cols-2 gap-4 mb-4">
                         <div className="bg-white/50 p-4 rounded-xl">
                           <p className="text-sm text-gray-600 mb-1">Price per kg</p>
-                          <p className="text-2xl font-light text-gray-900">${batch.pricePerKg}</p>
+                          <p className="text-2xl font-light text-gray-900">{batch.pricePerKg}Rwf</p>
                         </div>
                         <div className="bg-white/50 p-4 rounded-xl">
                           <p className="text-sm text-gray-600 mb-1">Available</p>
@@ -350,25 +350,26 @@ export default function MarketplacePage() {
 
                       {/* Quality Highlights */}
                       <div className="mb-4">
-                        <div className="grid grid-cols-2 gap-2 text-sm">
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Moisture:</span>
-                            <span className="font-medium">{batch.moisture_maize_grain}%</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Aflatoxin:</span>
-                            <span className="font-medium">{batch.aflatoxin} ppb</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Broken:</span>
-                            <span className="font-medium">{batch.broken_kernels_percent_maize_grain}%</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Foreign:</span>
-                            <span className="font-medium">{batch.foreign_matter_percent_maize_grain}%</span>
-                          </div>
-                        </div>
-                      </div>
+  <div className="grid grid-cols-2 gap-2 text-sm">
+    <div className="flex justify-between">
+      <span className="text-gray-600">Moisture:</span>
+      <span className="font-medium">{Number(batch.moisture_maize_grain).toFixed(2)}%</span>
+    </div>
+    <div className="flex justify-between">
+      <span className="text-gray-600">Aflatoxin:</span>
+      <span className="font-medium">{Number(batch.aflatoxin).toFixed(2)} ppb</span>
+    </div>
+    <div className="flex justify-between">
+      <span className="text-gray-600">Broken:</span>
+      <span className="font-medium">{Number(batch.broken_kernels_percent_maize_grain).toFixed(2)}%</span>
+    </div>
+    <div className="flex justify-between">
+      <span className="text-gray-600">Foreign:</span>
+      <span className="font-medium">{Number(batch.foreign_matter_percent_maize_grain).toFixed(2)}%</span>
+    </div>
+  </div>
+</div>
+
 
                       {/* Footer */}
                       <div className="flex items-center justify-between pt-4 border-t border-gray-200/50">
@@ -388,7 +389,7 @@ export default function MarketplacePage() {
                       {/* Total Value */}
                       <div className="mt-3 pt-3 border-t border-gray-200/50">
                         <p className="text-center text-lg font-medium text-gray-900">
-                          Total Value: ${(batch.availableQuantity * batch.pricePerKg).toFixed(2)}
+                          Total Value: {(batch.availableQuantity * batch.pricePerKg).toFixed(2)} Rwf
                         </p>
                       </div>
                     </div>
@@ -467,7 +468,7 @@ export default function MarketplacePage() {
                     </div>
                     <div>
                       <span className="text-gray-600">Price per kg:</span>
-                      <span className="ml-2 font-medium">${selectedBatch.pricePerKg}</span>
+                      <span className="ml-2 font-medium">{selectedBatch.pricePerKg} Rwf</span>
                     </div>
                     <div>
                       <span className="text-gray-600">Available:</span>
@@ -545,11 +546,11 @@ export default function MarketplacePage() {
                         </div>
                         <div className="flex justify-between">
                           <span>Price per kg:</span>
-                          <span className="font-medium">${selectedBatch.pricePerKg}</span>
+                          <span className="font-medium">{selectedBatch.pricePerKg} Rwf</span>
                         </div>
                         <div className="flex justify-between border-t pt-2 text-lg font-bold">
                           <span>Total Amount:</span>
-                          <span>${(parseFloat(orderForm.quantity) * selectedBatch.pricePerKg).toFixed(2)}</span>
+                          <span>Rwf{(parseFloat(orderForm.quantity) * selectedBatch.pricePerKg).toFixed(2)}</span>
                         </div>
                       </div>
                     </div>
