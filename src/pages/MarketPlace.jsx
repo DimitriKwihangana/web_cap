@@ -397,7 +397,6 @@ export default function MarketplacePage() {
               </div>
             )}
 
-            {/* Pagination */}
             {totalPages > 1 && (
               <div className="flex justify-center space-x-2">
                 <button
@@ -434,7 +433,6 @@ export default function MarketplacePage() {
           </>
         )}
 
-        {/* Order Modal */}
         {showOrderModal && selectedBatch && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div 
