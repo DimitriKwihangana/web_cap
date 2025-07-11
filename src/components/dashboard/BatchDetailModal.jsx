@@ -131,7 +131,7 @@ export default function BatchDetailModal({ isOpen, onClose, batch, user, onBatch
         throw new Error('Please enter a valid price per kg')
       }
 
-      const response = await fetch(`http://localhost:5000/api/batches/${batch._id}/market`, {
+      const response = await fetch(`https://back-cap.onrender.com/api/batches/${batch._id}/market`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -171,7 +171,7 @@ export default function BatchDetailModal({ isOpen, onClose, batch, user, onBatch
     setMarketplaceSuccess('')
 
     try {
-      const response = await fetch(`http://localhost:5000/api/batches/${batch._id}/market`, {
+      const response = await fetch(`https://back-cap.onrender.com/api/batches/${batch._id}/market`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

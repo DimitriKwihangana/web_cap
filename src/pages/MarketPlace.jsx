@@ -54,7 +54,7 @@ export default function MarketplacePage() {
         sortOrder: filters.sortOrder
       })
 
-      const response = await fetch(`http://localhost:5000/api/batches/market?${queryParams}`)
+      const response = await fetch(`https://back-cap.onrender.com/api/batches/market?${queryParams}`)
       const data = await response.json()
 
       if (data.success) {
@@ -113,7 +113,7 @@ export default function MarketplacePage() {
         throw new Error(`Maximum available quantity is ${selectedBatch.availableQuantity}kg`)
       }
 
-      const response = await fetch(`http://localhost:5000/api/batches/${selectedBatch._id}/purchase`, {
+      const response = await fetch(`https://back-cap.onrender.com/api/batches/${selectedBatch._id}/purchase`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
