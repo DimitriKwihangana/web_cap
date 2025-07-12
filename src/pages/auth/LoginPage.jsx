@@ -40,7 +40,7 @@ export default function LoginPage() {
     setError('')
     
     try {
-      // Make API call to login endpoint
+     
       const response = await axios.post('https://back-cap.onrender.com/api/login', {
         email: formData.email,
         password: formData.password
@@ -51,7 +51,6 @@ export default function LoginPage() {
       })
 
       if (response.data.status) {
-        // Prepare user information for storage
         const userInfo = {
           id: response.data.user._id,
           name: response.data.user.username,
