@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Search, Filter, ShoppingCart, Package, DollarSign, Calendar, User, Building, CheckCircle, AlertTriangle, XCircle, Eye } from 'lucide-react'
+import { Search, Filter, ShoppingCart, Package, DollarSign, Calendar, User, Building, CheckCircle, AlertTriangle, XCircle, Eye, MapPin, Phone, MessageSquare } from 'lucide-react'
 
 export default function MarketplacePage() {
   const [batches, setBatches] = useState([])
@@ -25,7 +25,15 @@ export default function MarketplacePage() {
       email: '',
       organization: '',
       phone: ''
-    }
+    },
+    deliveryAddress: {
+      street: '',
+      city: '',
+      state: '',
+      postalCode: '',
+      country: 'Rwanda'
+    },
+    notes: ''
   })
   const [orderSubmitting, setOrderSubmitting] = useState(false)
   const [orderSuccess, setOrderSuccess] = useState('')
@@ -97,7 +105,7 @@ export default function MarketplacePage() {
     }
   }
 
-  // Handle order submission
+  // FIXED: Handle order submission with better error handling
   const handleOrderSubmit = async () => {
     setOrderSubmitting(true)
     setOrderError('')
@@ -113,6 +121,22 @@ export default function MarketplacePage() {
         throw new Error(`Maximum available quantity is ${selectedBatch.availableQuantity}kg`)
       }
 
+      // Validate required fields
+      if (!orderForm.buyerDetails.name.trim()) {
+        throw new Error('Please enter your name')
+      }
+      if (!orderForm.buyerDetails.email.trim()) {
+        throw new Error('Please enter your email')
+      }
+      if (!orderForm.deliveryAddress.street.trim()) {
+        throw new Error('Please enter delivery street address')
+      }
+      if (!orderForm.deliveryAddress.city.trim()) {
+        throw new Error('Please enter delivery city')
+      }
+
+      console.log('Submitting order for batch:', selectedBatch._id)
+
       const response = await fetch(`https://back-cap.onrender.com/api/batches/${selectedBatch._id}/purchase`, {
         method: 'POST',
         headers: {
@@ -121,29 +145,64 @@ export default function MarketplacePage() {
         body: JSON.stringify({
           quantityPurchased: orderQuantity,
           buyerUserId: user.id,
-          buyerUserName: orderForm.buyerDetails.name || user.name
+          buyerUserName: orderForm.buyerDetails.name,
+          buyerEmail: orderForm.buyerDetails.email,
+          buyerContact: orderForm.buyerDetails.phone,
+          deliveryAddress: orderForm.deliveryAddress,
+          notes: orderForm.notes
         })
       })
 
       const data = await response.json()
+      console.log('Order response:', data)
 
       if (data.success) {
-        setOrderSuccess(`Order placed successfully! Total: Rwf${data.data.purchaseDetails.totalAmount.toFixed(2)}`)
-        setShowOrderModal(false)
-        setOrderForm({
-          quantity: '',
-          buyerDetails: { name: '', email: '', organization: '', phone: '' }
-        })
-        // Refresh batches to show updated quantities
-        fetchMarketBatches()
+        // Enhanced error checking for the response structure
+        if (data.data && data.data.order && data.data.order.orderId && data.data.purchaseDetails) {
+          const orderId = data.data.order.orderId
+          const totalAmount = data.data.purchaseDetails.totalAmount
+          
+          setOrderSuccess(`Order placed successfully! Order ID: ${orderId} | Total: ${totalAmount.toFixed(2)} Rwf`)
+          setShowOrderModal(false)
+          resetOrderForm()
+          fetchMarketBatches() // Refresh batches
+        } else {
+          console.error('Unexpected response structure:', data)
+          setOrderSuccess('Order placed successfully! Please check your email for details.')
+          setShowOrderModal(false)
+          resetOrderForm()
+          fetchMarketBatches()
+        }
       } else {
         throw new Error(data.message || 'Failed to place order')
       }
     } catch (err) {
-      setOrderError(err.message)
+      console.error('Order submission error:', err)
+      setOrderError(err.message || 'An error occurred while placing the order')
     } finally {
       setOrderSubmitting(false)
     }
+  }
+
+  // Reset order form
+  const resetOrderForm = () => {
+    setOrderForm({
+      quantity: '',
+      buyerDetails: {
+        name: '',
+        email: '',
+        organization: '',
+        phone: ''
+      },
+      deliveryAddress: {
+        street: '',
+        city: '',
+        state: '',
+        postalCode: '',
+        country: 'Rwanda'
+      },
+      notes: ''
+    })
   }
 
   // Open order modal
@@ -340,7 +399,7 @@ export default function MarketplacePage() {
                       <div className="grid grid-cols-2 gap-4 mb-4">
                         <div className="bg-white/50 p-4 rounded-xl">
                           <p className="text-sm text-gray-600 mb-1">Price per kg</p>
-                          <p className="text-2xl font-light text-gray-900">{batch.pricePerKg}Rwf</p>
+                          <p className="text-2xl font-light text-gray-900">{batch.pricePerKg} Rwf</p>
                         </div>
                         <div className="bg-white/50 p-4 rounded-xl">
                           <p className="text-sm text-gray-600 mb-1">Available</p>
@@ -350,26 +409,25 @@ export default function MarketplacePage() {
 
                       {/* Quality Highlights */}
                       <div className="mb-4">
-  <div className="grid grid-cols-2 gap-2 text-sm">
-    <div className="flex justify-between">
-      <span className="text-gray-600">Moisture:</span>
-      <span className="font-medium">{Number(batch.moisture_maize_grain).toFixed(2)}%</span>
-    </div>
-    <div className="flex justify-between">
-      <span className="text-gray-600">Aflatoxin:</span>
-      <span className="font-medium">{Number(batch.aflatoxin).toFixed(2)} ppb</span>
-    </div>
-    <div className="flex justify-between">
-      <span className="text-gray-600">Broken:</span>
-      <span className="font-medium">{Number(batch.broken_kernels_percent_maize_grain).toFixed(2)}%</span>
-    </div>
-    <div className="flex justify-between">
-      <span className="text-gray-600">Foreign:</span>
-      <span className="font-medium">{Number(batch.foreign_matter_percent_maize_grain).toFixed(2)}%</span>
-    </div>
-  </div>
-</div>
-
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Moisture:</span>
+                            <span className="font-medium">{Number(batch.moisture_maize_grain).toFixed(2)}%</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Aflatoxin:</span>
+                            <span className="font-medium">{Number(batch.aflatoxin).toFixed(2)} ppb</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Broken:</span>
+                            <span className="font-medium">{Number(batch.broken_kernels_percent_maize_grain).toFixed(2)}%</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Foreign:</span>
+                            <span className="font-medium">{Number(batch.foreign_matter_percent_maize_grain).toFixed(2)}%</span>
+                          </div>
+                        </div>
+                      </div>
 
                       {/* Footer */}
                       <div className="flex items-center justify-between pt-4 border-t border-gray-200/50">
@@ -434,6 +492,7 @@ export default function MarketplacePage() {
           </>
         )}
 
+        {/* Enhanced Order Modal */}
         {showOrderModal && selectedBatch && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div 
@@ -441,15 +500,15 @@ export default function MarketplacePage() {
               onClick={() => setShowOrderModal(false)}
             />
             
-            <div className="relative bg-white/90 backdrop-blur-2xl rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden border border-white/20">
+            <div className="relative bg-white/90 backdrop-blur-2xl rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden border border-white/20">
               {/* Header */}
               <div className="px-8 py-6 border-b border-white/10">
                 <h2 className="text-2xl font-light text-gray-900">Place Order</h2>
-                <p className="text-gray-600 mt-1">Batch: {selectedBatch.batchId}</p>
+                <p className="text-gray-600 mt-1">Batch: {selectedBatch.batchId} from {selectedBatch.supplier}</p>
               </div>
 
               {/* Content */}
-              <div className="px-8 py-6 max-h-[60vh] overflow-y-auto">
+              <div className="px-8 py-6 max-h-[70vh] overflow-y-auto">
                 {orderError && (
                   <div className="mb-6 p-4 bg-red-50/80 border border-red-200/50 rounded-2xl">
                     <div className="flex items-center">
@@ -461,7 +520,8 @@ export default function MarketplacePage() {
 
                 {/* Batch Summary */}
                 <div className="bg-gray-50/80 p-6 rounded-2xl mb-6">
-                  <div className="grid grid-cols-2 gap-4 text-sm">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">Batch Information</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                     <div>
                       <span className="text-gray-600">Supplier:</span>
                       <span className="ml-2 font-medium">{selectedBatch.supplier}</span>
@@ -481,80 +541,217 @@ export default function MarketplacePage() {
                   </div>
                 </div>
 
-                <div className="space-y-6">
-                  {/* Quantity */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Quantity (kg) *
-                    </label>
-                    <input
-                      type="number"
-                      value={orderForm.quantity}
-                      onChange={(e) => setOrderForm(prev => ({ ...prev, quantity: e.target.value }))}
-                      placeholder={`Max: ${selectedBatch.availableQuantity}kg`}
-                      className="w-full px-4 py-3 bg-white/50 border border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50"
-                      step="0.1"
-                      min="0.1"
-                      max={selectedBatch.availableQuantity}
-                      required
-                    />
-                  </div>
-
-                  {/* Buyer Details */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Your Name *
-                      </label>
-                      <input
-                        type="text"
-                        value={orderForm.buyerDetails.name}
-                        onChange={(e) => setOrderForm(prev => ({
-                          ...prev,
-                          buyerDetails: { ...prev.buyerDetails, name: e.target.value }
-                        }))}
-                        className="w-full px-4 py-3 bg-white/50 border border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50"
-                        required
-                      />
-                    </div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {/* Left Column - Order Details */}
+                  <div className="space-y-6">
+                    <h3 className="text-lg font-medium text-gray-900">Order Details</h3>
                     
+                    {/* Quantity */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Email *
+                        Quantity (kg) *
                       </label>
                       <input
-                        type="email"
-                        value={orderForm.buyerDetails.email}
-                        onChange={(e) => setOrderForm(prev => ({
-                          ...prev,
-                          buyerDetails: { ...prev.buyerDetails, email: e.target.value }
-                        }))}
+                        type="number"
+                        value={orderForm.quantity}
+                        onChange={(e) => setOrderForm(prev => ({ ...prev, quantity: e.target.value }))}
+                        placeholder={`Max: ${selectedBatch.availableQuantity}kg`}
                         className="w-full px-4 py-3 bg-white/50 border border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50"
+                        step="0.1"
+                        min="0.1"
+                        max={selectedBatch.availableQuantity}
                         required
                       />
                     </div>
+
+                    {/* Buyer Details */}
+                    <h4 className="text-md font-medium text-gray-900">Contact Information</h4>
+                    <div className="grid grid-cols-1 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <User className="w-4 h-4 inline mr-1" />
+                          Full Name *
+                        </label>
+                        <input
+                          type="text"
+                          value={orderForm.buyerDetails.name}
+                          onChange={(e) => setOrderForm(prev => ({
+                            ...prev,
+                            buyerDetails: { ...prev.buyerDetails, name: e.target.value }
+                          }))}
+                          className="w-full px-4 py-3 bg-white/50 border border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50"
+                          required
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Email Address *
+                        </label>
+                        <input
+                          type="email"
+                          value={orderForm.buyerDetails.email}
+                          onChange={(e) => setOrderForm(prev => ({
+                            ...prev,
+                            buyerDetails: { ...prev.buyerDetails, email: e.target.value }
+                          }))}
+                          className="w-full px-4 py-3 bg-white/50 border border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50"
+                          required
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <Phone className="w-4 h-4 inline mr-1" />
+                          Phone Number
+                        </label>
+                        <input
+                          type="tel"
+                          value={orderForm.buyerDetails.phone}
+                          onChange={(e) => setOrderForm(prev => ({
+                            ...prev,
+                            buyerDetails: { ...prev.buyerDetails, phone: e.target.value }
+                          }))}
+                          placeholder="+250 XXX XXX XXX"
+                          className="w-full px-4 py-3 bg-white/50 border border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <Building className="w-4 h-4 inline mr-1" />
+                          Organization/Company
+                        </label>
+                        <input
+                          type="text"
+                          value={orderForm.buyerDetails.organization}
+                          onChange={(e) => setOrderForm(prev => ({
+                            ...prev,
+                            buyerDetails: { ...prev.buyerDetails, organization: e.target.value }
+                          }))}
+                          placeholder="Optional"
+                          className="w-full px-4 py-3 bg-white/50 border border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50"
+                        />
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Order Summary */}
-                  {orderForm.quantity && (
-                    <div className="bg-blue-50/80 p-6 rounded-2xl">
-                      <h4 className="text-lg font-medium text-gray-900 mb-4">Order Summary</h4>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span>Quantity:</span>
-                          <span className="font-medium">{orderForm.quantity}kg</span>
+                  {/* Right Column - Delivery & Notes */}
+                  <div className="space-y-6">
+                    <h3 className="text-lg font-medium text-gray-900">Delivery Information</h3>
+                    
+                    {/* Delivery Address */}
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <MapPin className="w-4 h-4 inline mr-1" />
+                          Street Address *
+                        </label>
+                        <input
+                          type="text"
+                          value={orderForm.deliveryAddress.street}
+                          onChange={(e) => setOrderForm(prev => ({
+                            ...prev,
+                            deliveryAddress: { ...prev.deliveryAddress, street: e.target.value }
+                          }))}
+                          placeholder="Street address, building, etc."
+                          className="w-full px-4 py-3 bg-white/50 border border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50"
+                          required
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">City *</label>
+                          <input
+                            type="text"
+                            value={orderForm.deliveryAddress.city}
+                            onChange={(e) => setOrderForm(prev => ({
+                              ...prev,
+                              deliveryAddress: { ...prev.deliveryAddress, city: e.target.value }
+                            }))}
+                            className="w-full px-4 py-3 bg-white/50 border border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50"
+                            required
+                          />
                         </div>
-                        <div className="flex justify-between">
-                          <span>Price per kg:</span>
-                          <span className="font-medium">{selectedBatch.pricePerKg} Rwf</span>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Province/State</label>
+                          <input
+                            type="text"
+                            value={orderForm.deliveryAddress.state}
+                            onChange={(e) => setOrderForm(prev => ({
+                              ...prev,
+                              deliveryAddress: { ...prev.deliveryAddress, state: e.target.value }
+                            }))}
+                            className="w-full px-4 py-3 bg-white/50 border border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50"
+                          />
                         </div>
-                        <div className="flex justify-between border-t pt-2 text-lg font-bold">
-                          <span>Total Amount:</span>
-                          <span>Rwf{(parseFloat(orderForm.quantity) * selectedBatch.pricePerKg).toFixed(2)}</span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Postal Code</label>
+                          <input
+                            type="text"
+                            value={orderForm.deliveryAddress.postalCode}
+                            onChange={(e) => setOrderForm(prev => ({
+                              ...prev,
+                              deliveryAddress: { ...prev.deliveryAddress, postalCode: e.target.value }
+                            }))}
+                            className="w-full px-4 py-3 bg-white/50 border border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
+                          <input
+                            type="text"
+                            value={orderForm.deliveryAddress.country}
+                            onChange={(e) => setOrderForm(prev => ({
+                              ...prev,
+                              deliveryAddress: { ...prev.deliveryAddress, country: e.target.value }
+                            }))}
+                            className="w-full px-4 py-3 bg-white/50 border border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50"
+                          />
                         </div>
                       </div>
                     </div>
-                  )}
+
+                    {/* Notes */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <MessageSquare className="w-4 h-4 inline mr-1" />
+                        Special Instructions
+                      </label>
+                      <textarea
+                        value={orderForm.notes}
+                        onChange={(e) => setOrderForm(prev => ({ ...prev, notes: e.target.value }))}
+                        placeholder="Any special delivery instructions or notes..."
+                        rows={4}
+                        className="w-full px-4 py-3 bg-white/50 border border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 resize-none"
+                      />
+                    </div>
+
+                    {/* Order Summary */}
+                    {orderForm.quantity && (
+                      <div className="bg-blue-50/80 p-6 rounded-2xl">
+                        <h4 className="text-lg font-medium text-gray-900 mb-4">Order Summary</h4>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span>Quantity:</span>
+                            <span className="font-medium">{orderForm.quantity}kg</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Price per kg:</span>
+                            <span className="font-medium">{selectedBatch.pricePerKg} Rwf</span>
+                          </div>
+                          <div className="flex justify-between border-t pt-2 text-lg font-bold">
+                            <span>Total Amount:</span>
+                            <span>{(parseFloat(orderForm.quantity) * selectedBatch.pricePerKg).toFixed(2)} Rwf</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -568,7 +765,7 @@ export default function MarketplacePage() {
                 </button>
                 <button
                   onClick={handleOrderSubmit}
-                  disabled={orderSubmitting || !orderForm.quantity}
+                  disabled={orderSubmitting || !orderForm.quantity || !orderForm.buyerDetails.name || !orderForm.buyerDetails.email || !orderForm.deliveryAddress.street || !orderForm.deliveryAddress.city}
                   className="flex-1 py-3 px-6 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-2xl hover:from-green-700 hover:to-green-800 transition-all duration-200 font-medium shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {orderSubmitting ? 'Processing...' : 'Place Order'}

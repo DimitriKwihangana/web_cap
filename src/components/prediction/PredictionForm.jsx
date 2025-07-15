@@ -5,8 +5,13 @@ import Card from '../ui/Card'
 import Input from '../ui/Input'
 import Button from '../ui/Button'
 import ResultDisplay from './ResultDisplay'
+import { useApp } from '../../contexts/AppContext'
 
 export default function PredictionForm() {
+  
+   const { user, loading } = useApp()
+   console.log('User in PredictionForm:', user)
+
   const { predict, isLoading, result, error } = usePrediction()
   const [formData, setFormData] = useState({
     moisture_maize_grain: '',

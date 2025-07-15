@@ -10,6 +10,8 @@ import LearnPage from './pages/LearnPage'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import FineTunePage from './pages/FinetuningPage'
 import MarketplacePage from './pages/MarketPlace'
+import OrderManagementDashboard from './pages/OrderManagement'
+import TestPage from './pages/TestPage'
 
 function App() {
   return (
@@ -34,11 +36,21 @@ function App() {
               <FineTunePage />
             </ProtectedRoute>
           } />
+           <Route path="/ordermanagement" element={
+            <ProtectedRoute>
+              <OrderManagementDashboard />
+            </ProtectedRoute>
+          } />
           <Route path="/predict" element={
             <ProtectedRoute>
               <PredictPage />
             </ProtectedRoute>
           } />
+          <Route path="/test" element={
+            <ProtectedRoute>
+              <TestPage /></ProtectedRoute>
+          } />
+          
           <Route path="/learn" element={<LearnPage />} />
         </Routes>
       </Layout>
