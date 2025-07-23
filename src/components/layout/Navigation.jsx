@@ -5,13 +5,19 @@ import { Shield, Home, Zap, Book, User, Bell, Menu, X, LogOut, LogIn, UserPlus, 
 
 export default function Navigation() {
   const { user, logout } = useApp()
+  console.log(user, "user in Navigation")
   const navigate = useNavigate()
   const location = useLocation()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const navItems = user ? [
     { key: 'dashboard', label: 'Dashboard', icon: Home, href: '/dashboard' },
-    { key: 'predict', label: 'Predict', icon: Zap, href: '/predict' },
+    { 
+      key: 'predict', 
+      label: user.type === 'laboratory' ? 'Predict' : 'Test', 
+      icon: Zap, 
+      href: user.type === 'laboratory' ? '/predict' : '/test' 
+    },
     { key: 'learn', label: 'Learn', icon: Book, href: '/learn' },
     { key: 'profile', label: 'Profile', icon: User, href: '/profile' }
   ] : [

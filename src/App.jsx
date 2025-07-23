@@ -12,6 +12,7 @@ import FineTunePage from './pages/FinetuningPage'
 import MarketplacePage from './pages/MarketPlace'
 import OrderManagementDashboard from './pages/OrderManagement'
 import TestPage from './pages/TestPage'
+import ProfilePage from './pages/ProfilePage'
 
 function App() {
   return (
@@ -50,7 +51,10 @@ function App() {
             <ProtectedRoute>
               <TestPage /></ProtectedRoute>
           } />
-          
+           <Route path="/profile" element={
+            <ProtectedRoute>
+              <ProfilePage /></ProtectedRoute>
+          } />
           <Route path="/learn" element={<LearnPage />} />
         </Routes>
       </Layout>

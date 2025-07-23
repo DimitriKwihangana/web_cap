@@ -1,4 +1,4 @@
-import Navigation from './Naviagation'
+import Navigation from './Navigation'
 import { useApp } from '../../contexts/AppContext'
 
 export default function Layout({ children }) {

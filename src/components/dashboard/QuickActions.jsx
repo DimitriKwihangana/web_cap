@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { Zap, FileText, Database, Book, Brain, Settings, Users, Shield, ShoppingCart } from 'lucide-react'
+import { Zap, FileText, Database, Book, Brain, Settings, Users, Shield, ShoppingCart, Package } from 'lucide-react'
 import Button from '../ui/Button'
 import { useApp } from '../../contexts/AppContext'
 
@@ -7,21 +7,32 @@ export default function QuickActions() {
   const { user } = useApp()
   const navigate = useNavigate()
 
-  console.log(user, 'user__________')
+  console.log(user, 'user_________')
 
-  // Base actions for all users
+
   const baseActions = [
-    { icon: Zap, label: 'New Prediction', href: '/predict' },
-    { icon: FileText, label: 'Generate Report', href: '/reports' },
-    { icon: Database, label: 'Export Data', href: '/export' },
+    { 
+      icon: Zap, 
+      label: user?.type === 'laboratory' ? 'New Prediction' : 'Test', 
+      href: user?.type === 'laboratory' ? '/predict' : '/test' 
+    },
     { icon: Book, label: 'Learning Center', href: '/learn' }
   ]
 
-  // Conditional actions based on user type
+
   const getConditionalActions = () => {
     const conditionalActions = []
 
-    // Add marketplace for processor, admin, or institution users
+   
+    if (user?.type === 'cooperative' ) {
+      conditionalActions.push({
+        icon: Package,
+        label: 'Order Tracking',
+        href: '/ordermanagement',
+        
+      })
+    }
+
     if (user?.type === 'processor' || user?.type === 'admin' || user?.type === 'institution') {
       conditionalActions.push({
         icon: ShoppingCart,
@@ -126,6 +137,18 @@ export default function QuickActions() {
             <ShoppingCart className="w-4 h-4 text-emerald-600" />
             <span className="text-sm text-emerald-700 font-medium">
               {user?.type === 'processor' ? 'Grain Processor Access' : 'Institution Access'}
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Cooperative access indicator */}
+      {user?.type === 'cooperative' && (
+        <div className="mt-6 p-3 bg-gradient-to-r from-blue-50/80 to-indigo-50/80 rounded-xl border border-blue-200/50 backdrop-blur-sm">
+          <div className="flex items-center space-x-2">
+            <Package className="w-4 h-4 text-blue-600" />
+            <span className="text-sm text-blue-700 font-medium">
+              Cooperative Access
             </span>
           </div>
         </div>

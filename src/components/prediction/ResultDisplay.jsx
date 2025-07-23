@@ -4,72 +4,88 @@ import Card from '../ui/Card'
 import Button from '../ui/Button'
 import { useApp } from '../../contexts/AppContext'
 
-export default function ResultDisplay({ result, batchInfo }) {
+export default function ResultDisplay({ result, batchInfo, userId, userName, testId }) {
+
   const { user } = useApp()
   const [isSaving, setIsSaving] = useState(false)
-  const [saveStatus, setSaveStatus] = useState(null) // 'success', 'error', or null
+  const [saveStatus, setSaveStatus] = useState(null) 
 
   console.log(user, "user")
+  console.log(testId, "testId")
   
-  const saveBatch = async () => {
-    if (!user || !batchInfo || !result) {
-      setSaveStatus('error')
-      return
+const saveBatch = async () => {
+  if (!user || !batchInfo || !result) {
+    setSaveStatus('error')
+    return
+  }
+
+  setIsSaving(true)
+  setSaveStatus(null)
+
+  try {
+    const predictionValue = typeof result === 'number' ? result :
+                            (typeof result.prediction === 'number' ? result.prediction : 0)
+
+    const batchData = {
+      batchId: batchInfo.batchId,
+      supplier: batchInfo.supplier,
+      date: batchInfo.date,
+      userId: userId,
+      userName: userName,
+      moisture_maize_grain: parseFloat(batchInfo.moisture_maize_grain) || 0,
+      Immaturegrains: parseFloat(batchInfo.Immaturegrains) || 0,
+      Discolored_grains: parseFloat(batchInfo.Discolored_grains) || 0,
+      broken_kernels_percent_maize_grain: parseFloat(batchInfo.broken_kernels_percent_maize_grain) || 0,
+      foreign_matter_percent_maize_grain: parseFloat(batchInfo.foreign_matter_percent_maize_grain) || 0,
+      pest_damaged: parseFloat(batchInfo.pest_damaged) || 0,
+      rotten: parseFloat(batchInfo.rotten) || 0,
+      Liveinfestation: parseInt(batchInfo.Liveinfestation) || 0,
+      abnormal_odours_maize_grain: parseInt(batchInfo.abnormal_odours_maize_grain) || 0,
+      aflatoxin: predictionValue
     }
 
-    setIsSaving(true)
-    setSaveStatus(null)
+    const response = await fetch('https://back-cap.onrender.com/api/batches', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(batchData)
+    })
 
-    try {
-      // Extract the actual prediction value for aflatoxin
-      const predictionValue = typeof result === 'number' ? result : 
-                             (typeof result.prediction === 'number' ? result.prediction : 0)
+    const responseData = await response.json()
 
-      // Prepare batch data according to API format
-      const batchData = {
-        batchId: batchInfo.batchId,
-        supplier: batchInfo.supplier,
-        date: batchInfo.date,
-        userId: user.id, // Get from user context
-        userName: user.email, // Use email as userName
-        moisture_maize_grain: parseFloat(batchInfo.moisture_maize_grain) || 0,
-        Immaturegrains: parseFloat(batchInfo.Immaturegrains) || 0,
-        Discolored_grains: parseFloat(batchInfo.Discolored_grains) || 0,
-        broken_kernels_percent_maize_grain: parseFloat(batchInfo.broken_kernels_percent_maize_grain) || 0,
-        foreign_matter_percent_maize_grain: parseFloat(batchInfo.foreign_matter_percent_maize_grain) || 0,
-        pest_damaged: parseFloat(batchInfo.pest_damaged) || 0,
-        rotten: parseFloat(batchInfo.rotten) || 0,
-        Liveinfestation: parseInt(batchInfo.Liveinfestation) || 0,
-        abnormal_odours_maize_grain: parseInt(batchInfo.abnormal_odours_maize_grain) || 0,
-        aflatoxin: predictionValue // Include the prediction result as aflatoxin value
-      }
+    if (response.ok && responseData.success) {
+      console.log('Batch saved successfully:', responseData.data)
 
-      console.log('Saving batch data:', batchData)
-
-      const response = await fetch('https://back-cap.onrender.com/api/batches', {
-        method: 'POST',
+      
+      const updateTestResponse = await fetch(`https://back-cap.onrender.com/api/tests/${testId}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(batchData)
+        body: JSON.stringify({
+          tested: true,
+          testedId: responseData.data._id  
+        })
       })
 
-      const responseData = await response.json()
-
-      if (response.ok && responseData.success) {
-        setSaveStatus('success')
-        console.log('Batch saved successfully:', responseData.data)
-      } else {
-        setSaveStatus('error')
-        console.error('Failed to save batch:', responseData.message || responseData.error)
+      if (!updateTestResponse.ok) {
+        throw new Error('Failed to update test status')
       }
-    } catch (error) {
+
+      setSaveStatus('success')
+    } else {
       setSaveStatus('error')
-      console.error('Error saving batch:', error)
-    } finally {
-      setIsSaving(false)
+      console.error('Failed to save batch:', responseData.message || responseData.error)
     }
+  } catch (error) {
+    setSaveStatus('error')
+    console.error('Error saving batch or updating test:', error)
+  } finally {
+    setIsSaving(false)
   }
+}
+
   
   if (!result) {
     return (
@@ -190,7 +206,10 @@ export default function ResultDisplay({ result, batchInfo }) {
           <div className="space-y-2">
             <div className="flex justify-between">
               <span className="text-gray-600">Aflatoxin Level (ppb):</span>
-              <span className="font-semibold">{predictionValue}</span>
+             <span className="font-semibold">
+  {Number(predictionValue).toFixed(2)}
+</span>
+
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Batch ID:</span>

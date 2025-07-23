@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { X, Calendar, User, Building, Droplets, AlertTriangle, ShoppingCart, DollarSign, Package, CheckCircle, XCircle } from 'lucide-react'
+import { useApp } from '../../contexts/AppContext'
 
 export default function BatchDetailModal({ isOpen, onClose, batch, user, onBatchUpdate }) {
   const [isMarketplaceOpen, setIsMarketplaceOpen] = useState(false)
@@ -11,6 +12,8 @@ export default function BatchDetailModal({ isOpen, onClose, batch, user, onBatch
   const [marketplaceError, setMarketplaceError] = useState('')
   const [marketplaceSuccess, setMarketplaceSuccess] = useState('')
 
+
+
   if (!isOpen || !batch) return null
 
   // Check if current user owns this batch
@@ -19,6 +22,9 @@ export default function BatchDetailModal({ isOpen, onClose, batch, user, onBatch
     batch.userName === user.email || 
     batch.userName === user.username
   )
+
+  // Check if user is cooperative type and owns the batch
+  const canAccessMarketplace = isOwner && user?.type === 'cooperative'
 
   // Calculate aflatoxin assessment
   const calculateAflatoxinAssessment = (aflatoxinLevel) => {
@@ -267,8 +273,8 @@ export default function BatchDetailModal({ isOpen, onClose, batch, user, onBatch
             </div>
           </div>
 
-          {/* Marketplace Section */}
-          {isOwner && (
+          {/* Marketplace Section - Only show for cooperative users who own the batch */}
+          {canAccessMarketplace && (
             <div className="mb-8">
               <div className="bg-white/40 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-lg">
                 <div className="flex items-center justify-between mb-6">
@@ -489,6 +495,26 @@ export default function BatchDetailModal({ isOpen, onClose, batch, user, onBatch
                     )}
                   </div>
                 </div>
+
+                {/* Show marketplace access indicator */}
+                {isOwner && (
+                  <div className="p-4 bg-white/50 rounded-xl backdrop-blur-sm">
+                    <p className="text-sm font-medium text-gray-500 mb-2">Marketplace Access</p>
+                    <div className="flex items-center">
+                      {user?.type === 'cooperative' ? (
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-blue-700 bg-blue-100/80">
+                          <ShoppingCart className="w-4 h-4 mr-2" />
+                          Can list on marketplace
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-gray-600 bg-gray-100/80">
+                          <XCircle className="w-4 h-4 mr-2" />
+                          Marketplace access restricted to cooperatives
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

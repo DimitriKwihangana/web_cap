@@ -92,23 +92,8 @@ export default function HomePage() {
               </button>
             </div>
 
-            {/* Stats */}
-            <div className="flex items-center justify-center space-x-12 pt-8">
-              <div className="text-center">
-                <div className="text-3xl font-light text-slate-900">99.2%</div>
-                <div className="text-sm font-medium text-slate-500 uppercase tracking-wide">Accuracy</div>
-              </div>
-              <div className="w-px h-12 bg-slate-200"></div>
-              <div className="text-center">
-                <div className="text-3xl font-light text-slate-900">500+</div>
-                <div className="text-sm font-medium text-slate-500 uppercase tracking-wide">Organizations</div>
-              </div>
-              <div className="w-px h-12 bg-slate-200"></div>
-              <div className="text-center">
-                <div className="text-3xl font-light text-slate-900">24/7</div>
-                <div className="text-sm font-medium text-slate-500 uppercase tracking-wide">Support</div>
-              </div>
-            </div>
+        
+           
           </div>
 
           {/* Product Preview */}
