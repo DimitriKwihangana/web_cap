@@ -2,9 +2,116 @@ import { useState, useEffect } from 'react'
 import { Shield, Database, FlaskConical, FileText, Book, Award, Users, BookOpen, Star, Clock, Download } from 'lucide-react'
 
 export default function LearningCenter() {
+  const [language, setLanguage] = useState('en')
   const [courses, setCourses] = useState([])
   const [loading, setLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState('all')
+
+  // Load language from localStorage on component mount
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('language')
+    if (savedLanguage) {
+      setLanguage(savedLanguage)
+    }
+  }, [])
+
+  // Translation object
+  const translations = {
+    en: {
+      // Main titles
+      learningCenter: 'Learning Center',
+      learningDescription: 'Comprehensive training resources for professional development',
+      
+      // Categories
+      categories: 'Categories',
+      allCourses: 'All Courses',
+      foodSafety: 'Food Safety',
+      safetyTraining: 'Safety Training',
+      compliance: 'Compliance',
+      
+      // Course navigation
+      allAvailableCourses: 'All Available Courses',
+      exploreCollection: 'Explore our complete collection of professional training courses',
+      specializedTraining: 'Specialized training in',
+      
+      // Course details
+      modules: 'modules',
+      enrolled: 'enrolled',
+      enrollNow: 'Enroll Now',
+      
+      // Levels
+      beginner: 'Beginner',
+      intermediate: 'Intermediate',
+      advanced: 'Advanced',
+      
+      // Categories (for courses)
+      food: 'Food',
+      business: 'Business',
+      safety: 'Safety',
+      
+      // Featured resources
+      featuredResources: 'Featured Resources',
+      samplingGuide: 'Sampling Guide for Grains',
+      samplingDescription: 'Comprehensive guide on proper grain sampling techniques, quality assessment methods, and best practices for accurate results in agricultural testing.',
+      physicalTesting: 'Physical Components Testing',
+      physicalDescription: 'Detailed manual covering physical component analysis, testing procedures, equipment specifications, and quality control measures for grain evaluation.',
+      downloadPdf: 'Download PDF',
+      
+      // Loading
+      loadingCourses: 'Loading courses...',
+      
+      // Currency
+      currency: 'Rwf'
+    },
+    rw: {
+      // Main titles
+      learningCenter: 'Ikigo cyo Kwiga',
+      learningDescription: 'Ibikoresho byuzuye byo guhugura mu iterambere ry\'umwuga',
+      
+      // Categories
+      categories: 'Ibyiciro',
+      allCourses: 'Amasomo Yose',
+      foodSafety: 'Umutekano w\'Ibiryo',
+      safetyTraining: 'Amahugurwa y\'Umutekano',
+      compliance: 'Kubahiriza Amategeko',
+      
+      // Course navigation
+      allAvailableCourses: 'Amasomo Yose Aboneka',
+      exploreCollection: 'Shakisha urutonde rwacu rwuzuye rw\'amasomo y\'ubwuga',
+      specializedTraining: 'Amahugurwa yihariye mu',
+      
+      // Course details
+      modules: 'ibice',
+      enrolled: 'biyandikije',
+      enrollNow: 'Iyandikishe Ubu',
+      
+      // Levels
+      beginner: 'Intangiriro',
+      intermediate: 'Hagati',
+      advanced: 'Rwihishije',
+      
+      // Categories (for courses)
+      food: 'Ibiryo',
+      business: 'Ubucuruzi',
+      safety: 'Umutekano',
+      
+      // Featured resources
+      featuredResources: 'Ibikoresho Byibanze',
+      samplingGuide: 'Ubuyobozi bwo Gufata Ingero z\'Ibinyampeke',
+      samplingDescription: 'Ubuyobozi buzuye ku buhanga bwiza bwo gufata ingero z\'ibinyampeke, uburyo bwo gusuzuma ubwiza, n\'imikorere myiza yo kubona ibisubizo byukuri mu gerageza ry\'ubuhinzi.',
+      physicalTesting: 'Igerageza ry\'Ibice by\'Umubiri',
+      physicalDescription: 'Igitabo kirambuye kirimo isesengura ry\'ibice by\'umubiri, uburyo bw\'igerageza, ibipimo by\'ibikoresho, n\'ingamba zo kugenzura ubwiza mu gusuzuma ibinyampeke.',
+      downloadPdf: 'Gukuramo PDF',
+      
+      // Loading
+      loadingCourses: 'Gukura amasomo...',
+      
+      // Currency
+      currency: 'Frw'
+    }
+  }
+
+  const t = translations[language]
 
   useEffect(() => {
     fetchCourses()
@@ -34,10 +141,10 @@ export default function LearningCenter() {
   }
 
   const categories = [
-    { key: 'all', label: 'All Courses', icon: Book },
-    { key: 'food', label: 'Food Safety', icon: Shield },
-    { key: 'safety', label: 'Safety Training', icon: FlaskConical },
-    { key: 'compliance', label: 'Compliance', icon: FileText }
+    { key: 'all', label: t.allCourses, icon: Book },
+    { key: 'food', label: t.foodSafety, icon: Shield },
+    { key: 'safety', label: t.safetyTraining, icon: FlaskConical },
+    { key: 'compliance', label: t.compliance, icon: FileText }
   ]
 
   const getLevelColor = (level) => {
@@ -46,6 +153,24 @@ export default function LearningCenter() {
       case 'intermediate': return 'bg-yellow-50 text-yellow-700'
       case 'advanced': return 'bg-red-50 text-red-700'
       default: return 'bg-emerald-50 text-emerald-700'
+    }
+  }
+
+  const translateLevel = (level) => {
+    switch (level?.toLowerCase()) {
+      case 'beginner': return t.beginner
+      case 'intermediate': return t.intermediate
+      case 'advanced': return t.advanced
+      default: return level
+    }
+  }
+
+  const translateCategory = (category) => {
+    switch (category?.toLowerCase()) {
+      case 'food': return t.food
+      case 'business': return t.business
+      case 'safety': return t.safety
+      default: return category
     }
   }
 
@@ -64,28 +189,28 @@ export default function LearningCenter() {
 
   if (loading) {
     return (
-      <div className="min-h-screen  flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto mb-4"></div>
-          <p className="text-gray-500 font-light">Loading courses...</p>
+          <p className="text-gray-500 font-light">{t.loadingCourses}</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen ">
+    <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-light bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">Learning Center</h1>
-          <p className="text-gray-500 mt-2 font-light text-lg">Comprehensive training resources for professional development</p>
+          <h1 className="text-4xl font-light bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">{t.learningCenter}</h1>
+          <p className="text-gray-500 mt-2 font-light text-lg">{t.learningDescription}</p>
         </div>
 
         <div className="grid lg:grid-cols-4 gap-8">
           {/* Category Navigation */}
           <div className="lg:col-span-1">
             <div className="backdrop-blur-xl bg-white/20 rounded-2xl border border-white/30 p-6 shadow-2xl sticky top-24">
-              <h2 className="font-light text-gray-800 mb-6 text-lg">Categories</h2>
+              <h2 className="font-light text-gray-800 mb-6 text-lg">{t.categories}</h2>
               <div className="space-y-3">
                 {categories.map(category => (
                   <button
@@ -110,12 +235,12 @@ export default function LearningCenter() {
             {/* Header */}
             <div className="mb-8">
               <h2 className="text-3xl font-light text-gray-800 mb-2">
-                {selectedCategory === 'all' ? 'All Available Courses' : categories.find(c => c.key === selectedCategory)?.label}
+                {selectedCategory === 'all' ? t.allAvailableCourses : categories.find(c => c.key === selectedCategory)?.label}
               </h2>
               <p className="text-gray-500 font-light">
                 {selectedCategory === 'all' 
-                  ? 'Explore our complete collection of professional training courses'
-                  : `Specialized training in ${categories.find(c => c.key === selectedCategory)?.label.toLowerCase()}`
+                  ? t.exploreCollection
+                  : `${t.specializedTraining} ${categories.find(c => c.key === selectedCategory)?.label.toLowerCase()}`
                 }
               </p>
             </div>
@@ -146,10 +271,10 @@ export default function LearningCenter() {
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-2">
                           <span className={`px-3 py-1 text-xs font-light rounded-full ${getLevelColor(course.level)}`}>
-                            {course.level}
+                            {translateLevel(course.level)}
                           </span>
                           <span className="text-xs text-gray-400 font-light uppercase tracking-wide">
-                            {course.category}
+                            {translateCategory(course.category)}
                           </span>
                         </div>
                         <h3 className="text-xl font-light text-gray-800 mb-2 group-hover:text-emerald-600 transition-colors">
@@ -166,11 +291,11 @@ export default function LearningCenter() {
                       <div className="flex items-center space-x-4">
                         <span className="flex items-center">
                           <BookOpen className="w-4 h-4 mr-1" />
-                          {course.modules.length} modules
+                          {course.modules.length} {t.modules}
                         </span>
                         <span className="flex items-center">
                           <Users className="w-4 h-4 mr-1" />
-                          {course.enrolledStudents.length} enrolled
+                          {course.enrolledStudents.length} {t.enrolled}
                         </span>
                       </div>
                       <div className="flex items-center text-yellow-400">
@@ -184,10 +309,10 @@ export default function LearningCenter() {
 
                     <div className="flex items-center justify-between">
                       <div className="text-2xl font-light text-emerald-600">
-                        {(course.price / 1).toFixed(2)} Rwf
+                        {(course.price / 1).toFixed(2)} {t.currency}
                       </div>
                       <button className="px-6 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 shadow-lg font-light">
-                        Enroll Now
+                        {t.enrollNow}
                       </button>
                     </div>
                   </div>
@@ -197,7 +322,7 @@ export default function LearningCenter() {
 
             {/* Featured Resources */}
             <div className="space-y-8">
-              <h3 className="text-2xl font-light text-gray-800">Featured Resources</h3>
+              <h3 className="text-2xl font-light text-gray-800">{t.featuredResources}</h3>
               
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="backdrop-blur-xl bg-white/20 rounded-2xl border border-white/30 p-6 shadow-2xl bg-gradient-to-r from-emerald-50/50 to-teal-50/50">
@@ -206,14 +331,14 @@ export default function LearningCenter() {
                       <FlaskConical className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <h4 className="font-light text-gray-800 mb-2 text-lg">Sampling Guide for Grains</h4>
-                      <p className="text-gray-600 text-sm font-light mb-4 leading-relaxed">Comprehensive guide on proper grain sampling techniques, quality assessment methods, and best practices for accurate results in agricultural testing.</p>
+                      <h4 className="font-light text-gray-800 mb-2 text-lg">{t.samplingGuide}</h4>
+                      <p className="text-gray-600 text-sm font-light mb-4 leading-relaxed">{t.samplingDescription}</p>
                       <button 
-                        onClick={() => handlePdfDownload('1.pdf', 'Sampling_Guide_for_Grains.pdf')}
+                        onClick={() => handlePdfDownload('1.pdf', language === 'en' ? 'Sampling_Guide_for_Grains.pdf' : 'Ubuyobozi_bwo_Gufata_Ingero_z_Ibinyampeke.pdf')}
                         className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 shadow-md font-light text-sm flex items-center space-x-2"
                       >
                         <Download className="w-4 h-4" />
-                        <span>Download PDF</span>
+                        <span>{t.downloadPdf}</span>
                       </button>
                     </div>
                   </div>
@@ -225,14 +350,14 @@ export default function LearningCenter() {
                       <Award className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <h4 className="font-light text-gray-800 mb-2 text-lg">Physical Components Testing</h4>
-                      <p className="text-gray-600 text-sm font-light mb-4 leading-relaxed">Detailed manual covering physical component analysis, testing procedures, equipment specifications, and quality control measures for grain evaluation.</p>
+                      <h4 className="font-light text-gray-800 mb-2 text-lg">{t.physicalTesting}</h4>
+                      <p className="text-gray-600 text-sm font-light mb-4 leading-relaxed">{t.physicalDescription}</p>
                       <button 
-                        onClick={() => handlePdfDownload('2.pdf', 'Physical_Components_Testing.pdf')}
+                        onClick={() => handlePdfDownload('2.pdf', language === 'en' ? 'Physical_Components_Testing.pdf' : 'Igerageza_ry_Ibice_by_Umubiri.pdf')}
                         className="px-4 py-2 bg-gradient-to-r from-teal-500 to-emerald-500 text-white rounded-lg hover:from-teal-600 hover:to-emerald-600 transition-all duration-300 shadow-md font-light text-sm flex items-center space-x-2"
                       >
                         <Download className="w-4 h-4" />
-                        <span>Download PDF</span>
+                        <span>{t.downloadPdf}</span>
                       </button>
                     </div>
                   </div>

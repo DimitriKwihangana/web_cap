@@ -4,6 +4,7 @@ import { useApp } from '../contexts/AppContext'
 
 export default function MarketplacePage() {
   const { user, loading: appLoading } = useApp()
+  const [language, setLanguage] = useState('en')
   const [currentView, setCurrentView] = useState('marketplace') // 'marketplace' or 'orders'
   const [batches, setBatches] = useState([])
   const [orders, setOrders] = useState([])
@@ -43,6 +44,310 @@ export default function MarketplacePage() {
   const [orderSuccess, setOrderSuccess] = useState('')
   const [orderError, setOrderError] = useState('')
   const [expandedOrders, setExpandedOrders] = useState(new Set())
+
+  // Load language from localStorage on component mount
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('language')
+    if (savedLanguage) {
+      setLanguage(savedLanguage)
+    }
+  }, [])
+
+  // Translation object
+  const translations = {
+    en: {
+      // Main navigation
+      grainMarketplace: 'Grain Marketplace',
+      myOrders: 'My Orders',
+      qualityTestedGrain: 'Quality-tested grain batches ready for purchase',
+      trackOrders: 'Track your orders and delivery status',
+      marketplace: 'Marketplace',
+      
+      // Login required
+      loginRequired: 'Login Required',
+      pleaseLoginAccess: 'Please log in to access the marketplace.',
+      loading: 'Loading...',
+      
+      // Filters and search
+      searchBySupplier: 'Search by supplier...',
+      minPrice: 'Min price',
+      maxPrice: 'Max price',
+      minQuantityKg: 'Min quantity (kg)',
+      dateListed: 'Date Listed',
+      price: 'Price',
+      quantity: 'Quantity',
+      supplier: 'Supplier',
+      desc: 'Desc',
+      asc: 'Asc',
+      
+      // Batch information
+      pricePerKg: 'Price per kg',
+      available: 'Available',
+      moisture: 'Moisture:',
+      aflatoxin: 'Aflatoxin:',
+      broken: 'Broken:',
+      foreign: 'Foreign:',
+      listed: 'Listed',
+      order: 'Order',
+      totalValue: 'Total Value:',
+      
+      // Safety levels
+      safeForChildren: 'Safe for Children',
+      adultsOnly: 'Adults Only',
+      animalFeedOnly: 'Animal Feed Only',
+      notSafe: 'Not Safe',
+      
+      // No data states
+      noBatchesAvailable: 'No Batches Available',
+      noMatchingFilters: 'No batches match your current filters.',
+      noOrdersYet: 'No Orders Yet',
+      noOrdersPlaced: "You haven't placed any orders yet. Start shopping to see your orders here.",
+      browseMarketplace: 'Browse Marketplace',
+      
+      // Error states
+      errorLoadingBatches: 'Error Loading Batches',
+      tryAgain: 'Try Again',
+      
+      // Pagination
+      previous: 'Previous',
+      next: 'Next',
+      
+      // Order statuses
+      pending: 'Pending',
+      confirmed: 'Confirmed',
+      preparing: 'Preparing',
+      shipped: 'Shipped',
+      delivered: 'Delivered',
+      rejected: 'Rejected',
+      cancelled: 'Cancelled',
+      
+      // Order details
+      orderDetails: 'Order Details',
+      batch: 'Batch',
+      seller: 'Seller',
+      amount: 'Amount',
+      date: 'Date',
+      action: 'Action',
+      collapseDetails: 'Collapse details',
+      expandDetails: 'Expand details',
+      
+      // Order summary
+      orderSummary: 'Order Summary',
+      orderId: 'Order ID:',
+      unitPrice: 'Unit Price:',
+      totalAmount: 'Total Amount:',
+      
+      // Contact information
+      contactInformation: 'Contact Information',
+      buyer: 'Buyer',
+      
+      // Delivery
+      deliveryAddress: 'Delivery Address',
+      trackingInformation: 'Tracking Information',
+      trackingNumber: 'Tracking Number',
+      estimatedDelivery: 'Estimated Delivery',
+      orderTimeline: 'Order Timeline',
+      orderPlaced: 'Order placed:',
+      
+      // Order modal
+      placeOrder: 'Place Order',
+      batchFrom: 'from',
+      orderingAs: 'Ordering as:',
+      batchInformation: 'Batch Information',
+      safety: 'Safety:',
+      quantityKgRequired: 'Quantity (kg) *',
+      maxQuantity: 'Max:',
+      additionalInformation: 'Additional Information',
+      phoneNumber: 'Phone Number',
+      organizationCompany: 'Organization/Company',
+      optional: 'Optional',
+      deliveryInformation: 'Delivery Information',
+      streetAddressRequired: 'Street Address *',
+      streetPlaceholder: 'Street address, building, etc.',
+      city: 'City',
+      cityRequired: 'City *',
+      provinceState: 'Province/State',
+      postalCode: 'Postal Code',
+      country: 'Country',
+      specialInstructions: 'Special Instructions',
+      specialInstructionsPlaceholder: 'Any special delivery instructions or notes...',
+      cancel: 'Cancel',
+      processing: 'Processing...',
+      
+      // Order validation messages
+      enterValidQuantity: 'Please enter a valid quantity',
+      maxAvailableQuantity: 'Maximum available quantity is',
+      userNameNotAvailable: 'User name not available. Please ensure you are logged in.',
+      userEmailNotAvailable: 'User email not available. Please ensure you are logged in.',
+      enterDeliveryStreet: 'Please enter delivery street address',
+      enterDeliveryCity: 'Please enter delivery city',
+      
+      // Success messages
+      orderPlacedSuccess: 'Order placed successfully! Order ID:',
+      total: 'Total:',
+      orderPlacedCheckEmail: 'Order placed successfully! Please check your email for details.',
+      
+      // Error messages
+      failedToPlaceOrder: 'Failed to place order',
+      errorOccurredPlacing: 'An error occurred while placing the order',
+      
+      // Order notes
+      yourNotes: 'Your Notes',
+      sellerMessage: 'Seller Message',
+      
+      // Misc
+      kg: 'kg',
+      rwf: 'Rwf',
+      ppb: 'ppb'
+    },
+    rw: {
+      // Main navigation
+      grainMarketplace: 'Isoko ry\'Ibinyampeke',
+      myOrders: 'Ibitabo Byanjye',
+      qualityTestedGrain: 'Ibinyampeke byageragejwe kandi biteguye kugurwa',
+      trackOrders: 'Gukurikirana ibitabo byawe n\'uko bigezwa',
+      marketplace: 'Isoko',
+      
+      // Login required
+      loginRequired: 'Kwinjira Birakenewe',
+      pleaseLoginAccess: 'Nyabuneka injira kugirango ukore ku isoko.',
+      loading: 'Gukura...',
+      
+      // Filters and search
+      searchBySupplier: 'Shakisha ukurikije uwatanze...',
+      minPrice: 'Igiciro gito',
+      maxPrice: 'Igiciro kinini',
+      minQuantityKg: 'Ubwinshi buke (kg)',
+      dateListed: 'Itariki Yashyizwe',
+      price: 'Igiciro',
+      quantity: 'Ubwinshi',
+      supplier: 'Uwatanze',
+      desc: 'Kumanuka',
+      asc: 'Kuzamuka',
+      
+      // Batch information
+      pricePerKg: 'Igiciro kuri kg',
+      available: 'Biraboneka',
+      moisture: 'Ubusembure:',
+      aflatoxin: 'Aflatoxin:',
+      broken: 'Bimenetse:',
+      foreign: 'Ibindi:',
+      listed: 'Byashyizwe',
+      order: 'Gutumiza',
+      totalValue: 'Agaciro Gose:',
+      
+      // Safety levels
+      safeForChildren: 'Biryo byiza kubana',
+      adultsOnly: 'Bakuze Gusa',
+      animalFeedOnly: 'Indyo zinyamaswa Gusa',
+      notSafe: 'Birateje Akaga',
+      
+      // No data states
+      noBatchesAvailable: 'Nta binyampeke biboneka',
+      noMatchingFilters: 'Nta binyampeke bihuye na fiteri zawe.',
+      noOrdersYet: 'Nta bitabo biri',
+      noOrdersPlaced: 'Ntiwigeze utumiza. Tangira guhaha kugirango ubone ibitabo byawe hano.',
+      browseMarketplace: 'Shakisha mu Isoko',
+      
+      // Error states
+      errorLoadingBatches: 'Ikosa mu gukura Ibinyampeke',
+      tryAgain: 'Gerageza Ukundi',
+      
+      // Pagination
+      previous: 'Ibanjirije',
+      next: 'Ibikurikira',
+      
+      // Order statuses
+      pending: 'Byitegereje',
+      confirmed: 'Byemejwe',
+      preparing: 'Bitegurwa',
+      shipped: 'Byoherejwe',
+      delivered: 'Byahagaritse',
+      rejected: 'Byanzwe',
+      cancelled: 'Byahagaritswe',
+      
+      // Order details
+      orderDetails: 'Amakuru y\'Igitabo',
+      batch: 'Batch',
+      seller: 'Umuguzi',
+      amount: 'Amafaranga',
+      date: 'Itariki',
+      action: 'Igikorwa',
+      collapseDetails: 'Gufunga amakuru',
+      expandDetails: 'Kwagura amakuru',
+      
+      // Order summary
+      orderSummary: 'Incamake y\'Igitabo',
+      orderId: 'ID y\'Igitabo:',
+      unitPrice: 'Igiciro kuri kimwe:',
+      totalAmount: 'Amafaranga Yose:',
+      
+      // Contact information
+      contactInformation: 'Amakuru yo Kuvugana',
+      buyer: 'Umuguzi',
+      
+      // Delivery
+      deliveryAddress: 'Aho Bigezwa',
+      trackingInformation: 'Amakuru yo Gukurikirana',
+      trackingNumber: 'Nimero yo Gukurikirana',
+      estimatedDelivery: 'Itariki Igezwa',
+      orderTimeline: 'Igihe cy\'Igitabo',
+      orderPlaced: 'Igitabo cyatumijwe:',
+      
+      // Order modal
+      placeOrder: 'Gutumiza',
+      batchFrom: 'kuva',
+      orderingAs: 'Utumiza nka:',
+      batchInformation: 'Amakuru ya Batch',
+      safety: 'Umutekano:',
+      quantityKgRequired: 'Ubwinshi (kg) *',
+      maxQuantity: 'Max:',
+      additionalInformation: 'Amakuru Yinyongera',
+      phoneNumber: 'Nimero ya Telefoni',
+      organizationCompany: 'Ikigo/Isosiyete',
+      optional: 'Bitabanje',
+      deliveryInformation: 'Amakuru yo Gutanga',
+      streetAddressRequired: 'Aderesi y\'Umuhanda *',
+      streetPlaceholder: 'Aderesi y\'umuhanda, inyubako, nibindi...',
+      city: 'Umujyi',
+      cityRequired: 'Umujyi *',
+      provinceState: 'Intara/Leta',
+      postalCode: 'Kode ya Posita',
+      country: 'Igihugu',
+      specialInstructions: 'Amabwiriza Yihariye',
+      specialInstructionsPlaceholder: 'Amabwiriza yose yihariye yo gutanga cyangwa ibisobanuro...',
+      cancel: 'Kureka',
+      processing: 'Bitunganywa...',
+      
+      // Order validation messages
+      enterValidQuantity: 'Nyabuneka shyiramo ubwinshi bwemewe',
+      maxAvailableQuantity: 'Ubwinshi bukomeye buri',
+      userNameNotAvailable: 'Izina ry\'ukoresha ntirihari. Nyabuneka emeza ko winjiye.',
+      userEmailNotAvailable: 'Imeri y\'ukoresha ntirihari. Nyabuneka emeza ko winjiye.',
+      enterDeliveryStreet: 'Nyabuneka shyiramo aderesi y\'umuhanda yo gutanga',
+      enterDeliveryCity: 'Nyabuneka shyiramo umujyi wo gutanga',
+      
+      // Success messages
+      orderPlacedSuccess: 'Igitabo cyatumijwe neza! ID y\'Igitabo:',
+      total: 'Byose:',
+      orderPlacedCheckEmail: 'Igitabo cyatumijwe neza! Nyabuneka reba imeri yawe kugirango ubone amakuru.',
+      
+      // Error messages
+      failedToPlaceOrder: 'Kunanirwa gutumiza igitabo',
+      errorOccurredPlacing: 'Habaye ikosa mu gutumiza igitabo',
+      
+      // Order notes
+      yourNotes: 'Ibisobanuro Byawe',
+      sellerMessage: 'Ubutumwa bw\'Umuguzi',
+      
+      // Misc
+      kg: 'kg',
+      rwf: 'Frw',
+      ppb: 'ppb'
+    }
+  }
+
+  const t = translations[language]
 
   // Format numbers with commas
   const formatNumber = (num) => {
@@ -133,26 +438,26 @@ export default function MarketplacePage() {
     const level = parseFloat(aflatoxin) || 0
     
     if (level >= 0 && level <= 5) {
-      return { label: 'Safe for Children', color: 'green', icon: CheckCircle }
+      return { label: t.safeForChildren, color: 'green', icon: CheckCircle }
     } else if (level > 5 && level <= 10) {
-      return { label: 'Adults Only', color: 'yellow', icon: AlertTriangle }
+      return { label: t.adultsOnly, color: 'yellow', icon: AlertTriangle }
     } else if (level > 10 && level <= 20) {
-      return { label: 'Animal Feed Only', color: 'orange', icon: AlertTriangle }
+      return { label: t.animalFeedOnly, color: 'orange', icon: AlertTriangle }
     } else {
-      return { label: 'Not Safe', color: 'red', icon: XCircle }
+      return { label: t.notSafe, color: 'red', icon: XCircle }
     }
   }
 
   // Get order status styling
   const getOrderStatusInfo = (status) => {
     const statusMap = {
-      pending: { label: 'Pending', color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: Clock },
-      confirmed: { label: 'Confirmed', color: 'bg-blue-100 text-blue-800 border-blue-200', icon: CheckCircle },
-      preparing: { label: 'Preparing', color: 'bg-purple-100 text-purple-800 border-purple-200', icon: Package },
-      shipped: { label: 'Shipped', color: 'bg-indigo-100 text-indigo-800 border-indigo-200', icon: Truck },
-      delivered: { label: 'Delivered', color: 'bg-green-100 text-green-800 border-green-200', icon: Star },
-      rejected: { label: 'Rejected', color: 'bg-red-100 text-red-800 border-red-200', icon: XCircle },
-      cancelled: { label: 'Cancelled', color: 'bg-gray-100 text-gray-800 border-gray-200', icon: XCircle }
+      pending: { label: t.pending, color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: Clock },
+      confirmed: { label: t.confirmed, color: 'bg-blue-100 text-blue-800 border-blue-200', icon: CheckCircle },
+      preparing: { label: t.preparing, color: 'bg-purple-100 text-purple-800 border-purple-200', icon: Package },
+      shipped: { label: t.shipped, color: 'bg-indigo-100 text-indigo-800 border-indigo-200', icon: Truck },
+      delivered: { label: t.delivered, color: 'bg-green-100 text-green-800 border-green-200', icon: Star },
+      rejected: { label: t.rejected, color: 'bg-red-100 text-red-800 border-red-200', icon: XCircle },
+      cancelled: { label: t.cancelled, color: 'bg-gray-100 text-gray-800 border-gray-200', icon: XCircle }
     }
     return statusMap[status] || statusMap.pending
   }
@@ -166,24 +471,24 @@ export default function MarketplacePage() {
       const orderQuantity = parseFloat(orderForm.quantity)
       
       if (!orderQuantity || orderQuantity <= 0) {
-        throw new Error('Please enter a valid quantity')
+        throw new Error(t.enterValidQuantity)
       }
 
       if (orderQuantity > selectedBatch.availableQuantity) {
-        throw new Error(`Maximum available quantity is ${selectedBatch.availableQuantity}kg`)
+        throw new Error(`${t.maxAvailableQuantity} ${selectedBatch.availableQuantity}${t.kg}`)
       }
 
       if (!user?.name?.trim()) {
-        throw new Error('User name not available. Please ensure you are logged in.')
+        throw new Error(t.userNameNotAvailable)
       }
       if (!user?.email?.trim()) {
-        throw new Error('User email not available. Please ensure you are logged in.')
+        throw new Error(t.userEmailNotAvailable)
       }
       if (!orderForm.deliveryAddress.street.trim()) {
-        throw new Error('Please enter delivery street address')
+        throw new Error(t.enterDeliveryStreet)
       }
       if (!orderForm.deliveryAddress.city.trim()) {
-        throw new Error('Please enter delivery city')
+        throw new Error(t.enterDeliveryCity)
       }
 
       const response = await fetch(`https://back-cap.onrender.com/api/batches/${selectedBatch._id}/purchase`, {
@@ -209,21 +514,21 @@ export default function MarketplacePage() {
           const orderId = data.data.order.orderId
           const totalAmount = data.data.purchaseDetails.totalAmount
           
-          setOrderSuccess(`Order placed successfully! Order ID: ${orderId} | Total: ${formatNumber(totalAmount)} Rwf`)
+          setOrderSuccess(`${t.orderPlacedSuccess} ${orderId} | ${t.total} ${formatNumber(totalAmount)} ${t.rwf}`)
           setShowOrderModal(false)
           resetOrderForm()
           fetchMarketBatches() // Refresh batches
         } else {
-          setOrderSuccess('Order placed successfully! Please check your email for details.')
+          setOrderSuccess(t.orderPlacedCheckEmail)
           setShowOrderModal(false)
           resetOrderForm()
           fetchMarketBatches()
         }
       } else {
-        throw new Error(data.message || 'Failed to place order')
+        throw new Error(data.message || t.failedToPlaceOrder)
       }
     } catch (err) {
-      setOrderError(err.message || 'An error occurred while placing the order')
+      setOrderError(err.message || t.errorOccurredPlacing)
     } finally {
       setOrderSubmitting(false)
     }
@@ -280,7 +585,7 @@ export default function MarketplacePage() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <p className="text-gray-600">{t.loading}</p>
         </div>
       </div>
     )
@@ -292,8 +597,8 @@ export default function MarketplacePage() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 flex items-center justify-center">
         <div className="text-center">
           <AlertTriangle className="w-16 h-16 text-amber-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-medium text-gray-900 mb-2">Login Required</h2>
-          <p className="text-gray-600">Please log in to access the marketplace.</p>
+          <h2 className="text-2xl font-medium text-gray-900 mb-2">{t.loginRequired}</h2>
+          <p className="text-gray-600">{t.pleaseLoginAccess}</p>
         </div>
       </div>
     )
@@ -307,13 +612,10 @@ export default function MarketplacePage() {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-4xl font-light text-gray-900 mb-2">
-                {currentView === 'marketplace' ? 'Grain Marketplace' : 'My Orders'}
+                {currentView === 'marketplace' ? t.grainMarketplace : t.myOrders}
               </h1>
               <p className="text-xl text-gray-600 font-light">
-                {currentView === 'marketplace' 
-                  ? 'Quality-tested grain batches ready for purchase'
-                  : 'Track your orders and delivery status'
-                }
+                {currentView === 'marketplace' ? t.qualityTestedGrain : t.trackOrders}
               </p>
             </div>
             
@@ -328,7 +630,7 @@ export default function MarketplacePage() {
                 }`}
               >
                 <ShoppingCart className="w-5 h-5" />
-                <span>Marketplace</span>
+                <span>{t.marketplace}</span>
               </button>
               <button
                 onClick={() => setCurrentView('orders')}
@@ -339,7 +641,7 @@ export default function MarketplacePage() {
                 }`}
               >
                 <Package className="w-5 h-5" />
-                <span>My Orders</span>
+                <span>{t.myOrders}</span>
                 {orders.length > 0 && (
                   <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                     {orders.length}
@@ -377,7 +679,7 @@ export default function MarketplacePage() {
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
                     type="text"
-                    placeholder="Search by supplier..."
+                    placeholder={t.searchBySupplier}
                     value={filters.search}
                     onChange={(e) => handleFilterChange('search', e.target.value)}
                     className="w-full pl-11 pr-4 py-3 bg-white/50 border border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 backdrop-blur-sm"
@@ -388,7 +690,7 @@ export default function MarketplacePage() {
                 <div className="flex space-x-2">
                   <input
                     type="number"
-                    placeholder="Min price"
+                    placeholder={t.minPrice}
                     value={filters.minPrice}
                     onChange={(e) => handleFilterChange('minPrice', e.target.value)}
                     className="w-full px-4 py-3 bg-white/50 border border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 backdrop-blur-sm"
@@ -396,7 +698,7 @@ export default function MarketplacePage() {
                   />
                   <input
                     type="number"
-                    placeholder="Max price"
+                    placeholder={t.maxPrice}
                     value={filters.maxPrice}
                     onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
                     className="w-full px-4 py-3 bg-white/50 border border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 backdrop-blur-sm"
@@ -408,7 +710,7 @@ export default function MarketplacePage() {
                 <div>
                   <input
                     type="number"
-                    placeholder="Min quantity (kg)"
+                    placeholder={t.minQuantityKg}
                     value={filters.minQuantity}
                     onChange={(e) => handleFilterChange('minQuantity', e.target.value)}
                     className="w-full px-4 py-3 bg-white/50 border border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 backdrop-blur-sm"
@@ -422,18 +724,18 @@ export default function MarketplacePage() {
                     onChange={(e) => handleFilterChange('sortBy', e.target.value)}
                     className="flex-1 px-4 py-3 bg-white/50 border border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 backdrop-blur-sm"
                   >
-                    <option value="marketListedAt">Date Listed</option>
-                    <option value="pricePerKg">Price</option>
-                    <option value="availableQuantity">Quantity</option>
-                    <option value="supplier">Supplier</option>
+                    <option value="marketListedAt">{t.dateListed}</option>
+                    <option value="pricePerKg">{t.price}</option>
+                    <option value="availableQuantity">{t.quantity}</option>
+                    <option value="supplier">{t.supplier}</option>
                   </select>
                   <select
                     value={filters.sortOrder}
                     onChange={(e) => handleFilterChange('sortOrder', e.target.value)}
                     className="px-4 py-3 bg-white/50 border border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 backdrop-blur-sm"
                   >
-                    <option value="desc">Desc</option>
-                    <option value="asc">Asc</option>
+                    <option value="desc">{t.desc}</option>
+                    <option value="asc">{t.asc}</option>
                   </select>
                 </div>
               </div>
@@ -461,13 +763,13 @@ export default function MarketplacePage() {
             {error && (
               <div className="text-center py-12">
                 <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Error Loading Batches</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">{t.errorLoadingBatches}</h3>
                 <p className="text-gray-600 mb-4">{error}</p>
                 <button
                   onClick={fetchMarketBatches}
                   className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
                 >
-                  Try Again
+                  {t.tryAgain}
                 </button>
               </div>
             )}
@@ -478,8 +780,8 @@ export default function MarketplacePage() {
                 {batches.length === 0 ? (
                   <div className="text-center py-12">
                     <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No Batches Available</h3>
-                    <p className="text-gray-600">No batches match your current filters.</p>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">{t.noBatchesAvailable}</h3>
+                    <p className="text-gray-600">{t.noMatchingFilters}</p>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
@@ -512,12 +814,12 @@ export default function MarketplacePage() {
                           {/* Price and Quantity */}
                           <div className="grid grid-cols-2 gap-4 mb-4">
                             <div className="bg-white/50 p-4 rounded-xl">
-                              <p className="text-sm text-gray-600 mb-1">Price per kg</p>
-                              <p className="text-2xl font-light text-gray-900">{formatNumber(batch.pricePerKg)} Rwf</p>
+                              <p className="text-sm text-gray-600 mb-1">{t.pricePerKg}</p>
+                              <p className="text-2xl font-light text-gray-900">{formatNumber(batch.pricePerKg)} {t.rwf}</p>
                             </div>
                             <div className="bg-white/50 p-4 rounded-xl">
-                              <p className="text-sm text-gray-600 mb-1">Available</p>
-                              <p className="text-2xl font-light text-gray-900">{formatNumber(batch.availableQuantity)}kg</p>
+                              <p className="text-sm text-gray-600 mb-1">{t.available}</p>
+                              <p className="text-2xl font-light text-gray-900">{formatNumber(batch.availableQuantity)}{t.kg}</p>
                             </div>
                           </div>
 
@@ -525,19 +827,19 @@ export default function MarketplacePage() {
                           <div className="mb-4">
                             <div className="grid grid-cols-2 gap-2 text-sm">
                               <div className="flex justify-between">
-                                <span className="text-gray-600">Moisture:</span>
+                                <span className="text-gray-600">{t.moisture}</span>
                                 <span className="font-medium">{Number(batch.moisture_maize_grain).toFixed(2)}%</span>
                               </div>
                               <div className="flex justify-between">
-                                <span className="text-gray-600">Aflatoxin:</span>
-                                <span className="font-medium">{Number(batch.aflatoxin).toFixed(2)} ppb</span>
+                                <span className="text-gray-600">{t.aflatoxin}</span>
+                                <span className="font-medium">{Number(batch.aflatoxin).toFixed(2)} {t.ppb}</span>
                               </div>
                               <div className="flex justify-between">
-                                <span className="text-gray-600">Broken:</span>
+                                <span className="text-gray-600">{t.broken}</span>
                                 <span className="font-medium">{Number(batch.broken_kernels_percent_maize_grain).toFixed(2)}%</span>
                               </div>
                               <div className="flex justify-between">
-                                <span className="text-gray-600">Foreign:</span>
+                                <span className="text-gray-600">{t.foreign}</span>
                                 <span className="font-medium">{Number(batch.foreign_matter_percent_maize_grain).toFixed(2)}%</span>
                               </div>
                             </div>
@@ -547,21 +849,21 @@ export default function MarketplacePage() {
                           <div className="flex items-center justify-between pt-4 border-t border-gray-200/50">
                             <div className="text-sm text-gray-600 flex items-center">
                               <Calendar className="w-4 h-4 mr-1" />
-                              Listed {formatDate(batch.marketListedAt)}
+                              {t.listed} {formatDate(batch.marketListedAt)}
                             </div>
                             <button
                               onClick={() => openOrderModal(batch)}
                               className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-medium shadow-lg hover:shadow-xl flex items-center space-x-2"
                             >
                               <ShoppingCart className="w-4 h-4" />
-                              <span>Order</span>
+                              <span>{t.order}</span>
                             </button>
                           </div>
 
                           {/* Total Value */}
                           <div className="mt-3 pt-3 border-t border-gray-200/50">
                             <p className="text-center text-lg font-medium text-gray-900">
-                              Total Value: {formatNumber(batch.availableQuantity * batch.pricePerKg)} Rwf
+                              {t.totalValue} {formatNumber(batch.availableQuantity * batch.pricePerKg)} {t.rwf}
                             </p>
                           </div>
                         </div>
@@ -577,7 +879,7 @@ export default function MarketplacePage() {
                       disabled={currentPage === 1}
                       className="px-4 py-2 bg-white/60 border border-gray-200/50 rounded-xl disabled:opacity-50 hover:bg-white/80 transition-colors"
                     >
-                      Previous
+                      {t.previous}
                     </button>
                     
                     {[...Array(totalPages)].map((_, i) => (
@@ -599,7 +901,7 @@ export default function MarketplacePage() {
                       disabled={currentPage === totalPages}
                       className="px-4 py-2 bg-white/60 border border-gray-200/50 rounded-xl disabled:opacity-50 hover:bg-white/80 transition-colors"
                     >
-                      Next
+                      {t.next}
                     </button>
                   </div>
                 )}
@@ -630,13 +932,13 @@ export default function MarketplacePage() {
             ) : orders.length === 0 ? (
               <div className="bg-white/60 backdrop-blur-sm rounded-2xl border border-white/20 shadow-lg p-12 text-center">
                 <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-medium text-gray-900 mb-2">No Orders Yet</h3>
-                <p className="text-gray-600 mb-6">You haven't placed any orders yet. Start shopping to see your orders here.</p>
+                <h3 className="text-xl font-medium text-gray-900 mb-2">{t.noOrdersYet}</h3>
+                <p className="text-gray-600 mb-6">{t.noOrdersPlaced}</p>
                 <button
                   onClick={() => setCurrentView('marketplace')}
                   className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-medium"
                 >
-                  Browse Marketplace
+                  {t.browseMarketplace}
                 </button>
               </div>
             ) : (
@@ -644,12 +946,12 @@ export default function MarketplacePage() {
                 {/* List Header */}
                 <div className="bg-gray-50/80 px-6 py-4 border-b border-gray-200/50">
                   <div className="grid grid-cols-12 gap-4 text-sm font-medium text-gray-700">
-                    <div className="col-span-3">Order Details</div>
-                    <div className="col-span-2">Batch</div>
-                    <div className="col-span-2">Seller</div>
-                    <div className="col-span-2">Amount</div>
-                    <div className="col-span-2">Date</div>
-                    <div className="col-span-1 text-center">Action</div>
+                    <div className="col-span-3">{t.orderDetails}</div>
+                    <div className="col-span-2">{t.batch}</div>
+                    <div className="col-span-2">{t.seller}</div>
+                    <div className="col-span-2">{t.amount}</div>
+                    <div className="col-span-2">{t.date}</div>
+                    <div className="col-span-1 text-center">{t.action}</div>
                   </div>
                 </div>
 
@@ -681,7 +983,7 @@ export default function MarketplacePage() {
                             {/* Batch */}
                             <div className="col-span-2">
                               <p className="font-medium text-gray-900">{order.batchNumber}</p>
-                              <p className="text-sm text-gray-600">{formatNumber(order.quantityOrdered)}kg</p>
+                              <p className="text-sm text-gray-600">{formatNumber(order.quantityOrdered)}{t.kg}</p>
                             </div>
 
                             {/* Seller */}
@@ -691,8 +993,8 @@ export default function MarketplacePage() {
 
                             {/* Amount */}
                             <div className="col-span-2">
-                              <p className="font-medium text-gray-900">{formatNumber(order.totalAmount)} Rwf</p>
-                              <p className="text-sm text-gray-600">{formatNumber(order.pricePerKg)} Rwf/kg</p>
+                              <p className="font-medium text-gray-900">{formatNumber(order.totalAmount)} {t.rwf}</p>
+                              <p className="text-sm text-gray-600">{formatNumber(order.pricePerKg)} {t.rwf}/{t.kg}</p>
                             </div>
 
                             {/* Date */}
@@ -706,7 +1008,7 @@ export default function MarketplacePage() {
                               <button
                                 onClick={() => toggleOrderExpansion(order._id)}
                                 className="inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100/80 transition-colors duration-150"
-                                aria-label={isExpanded ? "Collapse details" : "Expand details"}
+                                aria-label={isExpanded ? t.collapseDetails : t.expandDetails}
                               >
                                 <svg 
                                   className={`w-4 h-4 text-gray-600 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
@@ -731,24 +1033,24 @@ export default function MarketplacePage() {
                                 <div className="bg-white/70 rounded-xl p-5 border border-gray-200/50">
                                   <h4 className="font-medium text-gray-900 mb-4 flex items-center">
                                     <Package className="w-5 h-5 mr-2 text-blue-600" />
-                                    Order Summary
+                                    {t.orderSummary}
                                   </h4>
                                   <div className="space-y-3">
                                     <div className="flex justify-between items-center">
-                                      <span className="text-gray-600">Order ID:</span>
+                                      <span className="text-gray-600">{t.orderId}</span>
                                       <span className="font-medium text-gray-900">#{order.orderId}</span>
                                     </div>
                                     <div className="flex justify-between items-center">
-                                      <span className="text-gray-600">Quantity:</span>
-                                      <span className="font-medium text-gray-900">{formatNumber(order.quantityOrdered)} kg</span>
+                                      <span className="text-gray-600">{t.quantity}:</span>
+                                      <span className="font-medium text-gray-900">{formatNumber(order.quantityOrdered)} {t.kg}</span>
                                     </div>
                                     <div className="flex justify-between items-center">
-                                      <span className="text-gray-600">Unit Price:</span>
-                                      <span className="font-medium text-gray-900">{formatNumber(order.pricePerKg)} Rwf</span>
+                                      <span className="text-gray-600">{t.unitPrice}</span>
+                                      <span className="font-medium text-gray-900">{formatNumber(order.pricePerKg)} {t.rwf}</span>
                                     </div>
                                     <div className="flex justify-between items-center pt-3 border-t border-gray-200/50">
-                                      <span className="font-medium text-gray-900">Total Amount:</span>
-                                      <span className="font-light text-lg text-gray-900">{formatNumber(order.totalAmount)} Rwf</span>
+                                      <span className="font-medium text-gray-900">{t.totalAmount}</span>
+                                      <span className="font-light text-lg text-gray-900">{formatNumber(order.totalAmount)} {t.rwf}</span>
                                     </div>
                                   </div>
                                 </div>
@@ -757,11 +1059,11 @@ export default function MarketplacePage() {
                                 <div className="bg-white/70 rounded-xl p-5 border border-gray-200/50">
                                   <h4 className="font-medium text-gray-900 mb-4 flex items-center">
                                     <User className="w-5 h-5 mr-2 text-green-600" />
-                                    Contact Information
+                                    {t.contactInformation}
                                   </h4>
                                   <div className="space-y-4">
                                     <div>
-                                      <p className="text-sm text-gray-600 mb-1">Buyer</p>
+                                      <p className="text-sm text-gray-600 mb-1">{t.buyer}</p>
                                       <p className="font-medium text-gray-900">{order.buyerName}</p>
                                       <p className="text-sm text-gray-600">{order.buyerEmail}</p>
                                       {order.buyerContact && (
@@ -769,7 +1071,7 @@ export default function MarketplacePage() {
                                       )}
                                     </div>
                                     <div>
-                                      <p className="text-sm text-gray-600 mb-1">Seller</p>
+                                      <p className="text-sm text-gray-600 mb-1">{t.seller}</p>
                                       <p className="font-light text-gray-900">{order.sellerName}</p>
                                     </div>
                                   </div>
@@ -783,7 +1085,7 @@ export default function MarketplacePage() {
                                   <div className="bg-white/70 rounded-xl p-5 border border-gray-200/50">
                                     <h4 className="font-light text-gray-900 mb-4 flex items-center">
                                       <MapPin className="w-5 h-5 mr-2 text-purple-600" />
-                                      Delivery Address
+                                      {t.deliveryAddress}
                                     </h4>
                                     <div className="text-gray-700 space-y-1">
                                       <p>{order.deliveryAddress.street}</p>
@@ -798,12 +1100,12 @@ export default function MarketplacePage() {
                                   <div className="bg-white/70 rounded-xl p-5 border border-gray-200/50">
                                     <h4 className="font-medium text-gray-900 mb-4 flex items-center">
                                       <Truck className="w-5 h-5 mr-2 text-blue-600" />
-                                      Tracking Information
+                                      {t.trackingInformation}
                                     </h4>
                                     <div className="space-y-3">
                                       {order.trackingNumber && (
                                         <div>
-                                          <p className="text-sm text-gray-600 mb-1">Tracking Number</p>
+                                          <p className="text-sm text-gray-600 mb-1">{t.trackingNumber}</p>
                                           <p className="font-mono text-sm bg-gray-100/80 px-3 py-2 rounded-lg border">
                                             {order.trackingNumber}
                                           </p>
@@ -811,7 +1113,7 @@ export default function MarketplacePage() {
                                       )}
                                       {order.estimatedDelivery && (
                                         <div>
-                                          <p className="text-sm text-gray-600 mb-1">Estimated Delivery</p>
+                                          <p className="text-sm text-gray-600 mb-1">{t.estimatedDelivery}</p>
                                           <p className="font-medium text-gray-900">{formatDate(order.estimatedDelivery)}</p>
                                         </div>
                                       )}
@@ -823,32 +1125,32 @@ export default function MarketplacePage() {
                                 <div className="bg-white/70 rounded-xl p-5 border border-gray-200/50">
                                   <h4 className="font-medium text-gray-900 mb-4 flex items-center">
                                     <Clock className="w-5 h-5 mr-2 text-orange-600" />
-                                    Order Timeline
+                                    {t.orderTimeline}
                                   </h4>
                                   <div className="space-y-3">
                                     <div className="flex items-center text-sm">
                                       <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-                                      <span className="text-gray-600">Order placed:</span>
+                                      <span className="text-gray-600">{t.orderPlaced}</span>
                                       <span className="ml-auto font-medium text-gray-900">{formatDateTime(order.orderDate)}</span>
                                     </div>
                                     {order.confirmedAt && (
                                       <div className="flex items-center text-sm">
                                         <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                                        <span className="text-gray-600">Confirmed:</span>
+                                        <span className="text-gray-600">{t.confirmed}:</span>
                                         <span className="ml-auto font-medium text-gray-900">{formatDateTime(order.confirmedAt)}</span>
                                       </div>
                                     )}
                                     {order.shippedAt && (
                                       <div className="flex items-center text-sm">
                                         <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
-                                        <span className="text-gray-600">Shipped:</span>
+                                        <span className="text-gray-600">{t.shipped}:</span>
                                         <span className="ml-auto font-medium text-gray-900">{formatDateTime(order.shippedAt)}</span>
                                       </div>
                                     )}
                                     {order.deliveredAt && (
                                       <div className="flex items-center text-sm">
                                         <div className="w-2 h-2 bg-emerald-500 rounded-full mr-3"></div>
-                                        <span className="text-gray-600">Delivered:</span>
+                                        <span className="text-gray-600">{t.delivered}:</span>
                                         <span className="ml-auto font-medium text-gray-900">{formatDateTime(order.deliveredAt)}</span>
                                       </div>
                                     )}
@@ -864,7 +1166,7 @@ export default function MarketplacePage() {
                                   <div className="bg-amber-50/70 rounded-xl p-5 border border-amber-200/50">
                                     <h4 className="font-medium text-amber-800 mb-3 flex items-center">
                                       <MessageSquare className="w-4 h-4 mr-2" />
-                                      Your Notes
+                                      {t.yourNotes}
                                     </h4>
                                     <p className="text-amber-700 italic text-sm">"{order.notes}"</p>
                                   </div>
@@ -873,7 +1175,7 @@ export default function MarketplacePage() {
                                   <div className="bg-emerald-50/70 rounded-xl p-5 border border-emerald-200/50">
                                     <h4 className="font-medium text-emerald-800 mb-3 flex items-center">
                                       <FileText className="w-4 h-4 mr-2" />
-                                      Seller Message
+                                      {t.sellerMessage}
                                     </h4>
                                     <p className="text-emerald-700 italic text-sm">"{order.sellerNotes}"</p>
                                   </div>
@@ -902,9 +1204,9 @@ export default function MarketplacePage() {
             <div className="relative bg-white/90 backdrop-blur-2xl rounded-3xl shadow-2xl max-w-4xl w-full max-h-[95vh] overflow-hidden border border-white/20 flex flex-col">
               {/* Header */}
               <div className="px-8 py-6 border-b border-white/10 flex-shrink-0">
-                <h2 className="text-2xl font-light text-gray-900">Place Order</h2>
-                <p className="text-gray-600 mt-1">Batch: {selectedBatch.batchId} from {selectedBatch.supplier}</p>
-                <p className="text-sm text-blue-600 mt-2">Ordering as: {user.name} ({user.email})</p>
+                <h2 className="text-2xl font-light text-gray-900">{t.placeOrder}</h2>
+                <p className="text-gray-600 mt-1">{t.batch}: {selectedBatch.batchId} {t.batchFrom} {selectedBatch.supplier}</p>
+                <p className="text-sm text-blue-600 mt-2">{t.orderingAs} {user.name} ({user.email})</p>
               </div>
 
               {/* Content - Scrollable */}
@@ -920,22 +1222,22 @@ export default function MarketplacePage() {
 
                 {/* Batch Summary */}
                 <div className="bg-gray-50/80 p-6 rounded-2xl mb-6">
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Batch Information</h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">{t.batchInformation}</h3>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                     <div>
-                      <span className="text-gray-600">Supplier:</span>
+                      <span className="text-gray-600">{t.supplier}:</span>
                       <span className="ml-2 font-medium">{selectedBatch.supplier}</span>
                     </div>
                     <div>
-                      <span className="text-gray-600">Price per kg:</span>
-                      <span className="ml-2 font-medium">{formatNumber(selectedBatch.pricePerKg)} Rwf</span>
+                      <span className="text-gray-600">{t.pricePerKg}:</span>
+                      <span className="ml-2 font-medium">{formatNumber(selectedBatch.pricePerKg)} {t.rwf}</span>
                     </div>
                     <div>
-                      <span className="text-gray-600">Available:</span>
-                      <span className="ml-2 font-medium">{formatNumber(selectedBatch.availableQuantity)}kg</span>
+                      <span className="text-gray-600">{t.available}:</span>
+                      <span className="ml-2 font-medium">{formatNumber(selectedBatch.availableQuantity)}{t.kg}</span>
                     </div>
                     <div>
-                      <span className="text-gray-600">Safety:</span>
+                      <span className="text-gray-600">{t.safety}:</span>
                       <span className="ml-2 font-medium">{getSafetyInfo(selectedBatch.aflatoxin).label}</span>
                     </div>
                   </div>
@@ -944,18 +1246,18 @@ export default function MarketplacePage() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   {/* Left Column - Order Details */}
                   <div className="space-y-6">
-                    <h3 className="text-lg font-medium text-gray-900">Order Details</h3>
+                    <h3 className="text-lg font-medium text-gray-900">{t.orderDetails}</h3>
                     
                     {/* Quantity */}
                     <div>
                       <label className="block text-sm font-light text-gray-700 mb-2">
-                        Quantity (kg) *
+                        {t.quantityKgRequired}
                       </label>
                       <input
                         type="number"
                         value={orderForm.quantity}
                         onChange={(e) => setOrderForm(prev => ({ ...prev, quantity: e.target.value }))}
-                        placeholder={`Max: ${formatNumber(selectedBatch.availableQuantity)}kg`}
+                        placeholder={`${t.maxQuantity} ${formatNumber(selectedBatch.availableQuantity)}${t.kg}`}
                         className="w-full px-4 py-3 bg-white/50 border border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50"
                         step="0.1"
                         min="0.1"
@@ -965,12 +1267,12 @@ export default function MarketplacePage() {
                     </div>
 
                     {/* Additional Contact Info */}
-                    <h4 className="text-md font-medium text-gray-900">Additional Information</h4>
+                    <h4 className="text-md font-medium text-gray-900">{t.additionalInformation}</h4>
                     <div className="grid grid-cols-1 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           <Phone className="w-4 h-4 inline mr-1" />
-                          Phone Number
+                          {t.phoneNumber}
                         </label>
                         <input
                           type="tel"
@@ -987,7 +1289,7 @@ export default function MarketplacePage() {
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           <Building className="w-4 h-4 inline mr-1" />
-                          Organization/Company
+                          {t.organizationCompany}
                         </label>
                         <input
                           type="text"
@@ -996,7 +1298,7 @@ export default function MarketplacePage() {
                             ...prev,
                             buyerDetails: { ...prev.buyerDetails, organization: e.target.value }
                           }))}
-                          placeholder="Optional"
+                          placeholder={t.optional}
                           className="w-full px-4 py-3 bg-white/50 border border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50"
                         />
                       </div>
@@ -1005,14 +1307,14 @@ export default function MarketplacePage() {
 
                   {/* Right Column - Delivery & Notes */}
                   <div className="space-y-6">
-                    <h3 className="text-lg font-medium text-gray-900">Delivery Information</h3>
+                    <h3 className="text-lg font-medium text-gray-900">{t.deliveryInformation}</h3>
                     
                     {/* Delivery Address */}
                     <div className="space-y-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           <MapPin className="w-4 h-4 inline mr-1" />
-                          Street Address *
+                          {t.streetAddressRequired}
                         </label>
                         <input
                           type="text"
@@ -1021,7 +1323,7 @@ export default function MarketplacePage() {
                             ...prev,
                             deliveryAddress: { ...prev.deliveryAddress, street: e.target.value }
                           }))}
-                          placeholder="Street address, building, etc."
+                          placeholder={t.streetPlaceholder}
                           className="w-full px-4 py-3 bg-white/50 border border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50"
                           required
                         />
@@ -1029,7 +1331,7 @@ export default function MarketplacePage() {
 
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">City *</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">{t.cityRequired}</label>
                           <input
                             type="text"
                             value={orderForm.deliveryAddress.city}
@@ -1042,7 +1344,7 @@ export default function MarketplacePage() {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">Province/State</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">{t.provinceState}</label>
                           <input
                             type="text"
                             value={orderForm.deliveryAddress.state}
@@ -1057,7 +1359,7 @@ export default function MarketplacePage() {
 
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">Postal Code</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">{t.postalCode}</label>
                           <input
                             type="text"
                             value={orderForm.deliveryAddress.postalCode}
@@ -1069,7 +1371,7 @@ export default function MarketplacePage() {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">{t.country}</label>
                           <input
                             type="text"
                             value={orderForm.deliveryAddress.country}
@@ -1087,12 +1389,12 @@ export default function MarketplacePage() {
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         <MessageSquare className="w-4 h-4 inline mr-1" />
-                        Special Instructions
+                        {t.specialInstructions}
                       </label>
                       <textarea
                         value={orderForm.notes}
                         onChange={(e) => setOrderForm(prev => ({ ...prev, notes: e.target.value }))}
-                        placeholder="Any special delivery instructions or notes..."
+                        placeholder={t.specialInstructionsPlaceholder}
                         rows={4}
                         className="w-full px-4 py-3 bg-white/50 border border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 resize-none"
                       />
@@ -1101,19 +1403,19 @@ export default function MarketplacePage() {
                     {/* Order Summary */}
                     {orderForm.quantity && (
                       <div className="bg-blue-50/80 p-6 rounded-2xl">
-                        <h4 className="text-lg font-medium text-gray-900 mb-4">Order Summary</h4>
+                        <h4 className="text-lg font-medium text-gray-900 mb-4">{t.orderSummary}</h4>
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
-                            <span>Quantity:</span>
-                            <span className="font-medium">{formatNumber(orderForm.quantity)}kg</span>
+                            <span>{t.quantity}:</span>
+                            <span className="font-medium">{formatNumber(orderForm.quantity)}{t.kg}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span>Price per kg:</span>
-                            <span className="font-medium">{formatNumber(selectedBatch.pricePerKg)} Rwf</span>
+                            <span>{t.pricePerKg}:</span>
+                            <span className="font-medium">{formatNumber(selectedBatch.pricePerKg)} {t.rwf}</span>
                           </div>
                           <div className="flex justify-between border-t pt-2 text-lg font-bold">
-                            <span>Total Amount:</span>
-                            <span>{formatNumber(parseFloat(orderForm.quantity) * selectedBatch.pricePerKg)} Rwf</span>
+                            <span>{t.totalAmount}:</span>
+                            <span>{formatNumber(parseFloat(orderForm.quantity) * selectedBatch.pricePerKg)} {t.rwf}</span>
                           </div>
                         </div>
                       </div>
@@ -1128,14 +1430,14 @@ export default function MarketplacePage() {
                   onClick={() => setShowOrderModal(false)}
                   className="flex-1 py-3 px-6 bg-gray-500 text-white rounded-2xl hover:bg-gray-600 transition-colors font-medium"
                 >
-                  Cancel
+                  {t.cancel}
                 </button>
                 <button
                   onClick={handleOrderSubmit}
                   disabled={orderSubmitting || !orderForm.quantity || !orderForm.deliveryAddress.street || !orderForm.deliveryAddress.city}
                   className="flex-1 py-3 px-6 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-2xl hover:from-green-700 hover:to-green-800 transition-all duration-200 font-medium shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {orderSubmitting ? 'Processing...' : 'Place Order'}
+                  {orderSubmitting ? t.processing : t.placeOrder}
                 </button>
               </div>
             </div>

@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useApp } from '../../contexts/AppContext'
-import { Shield, Home, Zap, Book, User, Bell, Menu, X, LogOut, LogIn, UserPlus, Mail } from 'lucide-react'
+import { Shield, Home, Zap, Book, User, Globe, Menu, X, LogOut, LogIn, UserPlus, Mail } from 'lucide-react'
 
 export default function Navigation() {
   const { user, logout } = useApp()
@@ -9,21 +9,70 @@ export default function Navigation() {
   const navigate = useNavigate()
   const location = useLocation()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [language, setLanguage] = useState('en')
+
+  // Load language from localStorage on component mount
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('language')
+    if (savedLanguage) {
+      setLanguage(savedLanguage)
+    }
+  }, [])
+
+  // Translation object
+  const translations = {
+    en: {
+      dashboard: 'Dashboard',
+      predict: 'Predict',
+      test: 'Test',
+      learn: 'Learn',
+      profile: 'Profile',
+      home: 'Home',
+      about: 'About',
+      contact: 'Contact',
+      login: 'Login',
+      register: 'Register',
+      logout: 'Logout',
+      english: 'English',
+      kinyarwanda: 'Kinyarwanda',
+      professional: 'Professional',
+      switchTo: 'Switch to'
+    },
+    rw: {
+      dashboard: 'Ikibaho',
+      predict: 'Guhanura',
+      test: 'Gupima',
+      learn: 'Kwiga',
+      profile: 'Umwirondoro',
+      home: 'Ahabanza',
+      about: 'Ibyerekeye',
+      contact: 'Twandikire',
+      login: 'Kwinjira',
+      register: 'Kwiyandikisha',
+      logout: 'Gusohoka',
+      english: 'Icyongereza',
+      kinyarwanda: 'Ikinyarwanda',
+      professional: 'Abanyamwuga',
+      switchTo: 'Hindura ku'
+    }
+  }
+
+  const t = translations[language]
 
   const navItems = user ? [
-    { key: 'dashboard', label: 'Dashboard', icon: Home, href: '/dashboard' },
+    { key: 'dashboard', label: t.dashboard, icon: Home, href: '/dashboard' },
     { 
       key: 'predict', 
-      label: user.type === 'laboratory' ? 'Predict' : 'Test', 
+      label: user.type === 'laboratory' ? t.predict : t.test, 
       icon: Zap, 
       href: user.type === 'laboratory' ? '/predict' : '/test' 
     },
-    { key: 'learn', label: 'Learn', icon: Book, href: '/learn' },
-    { key: 'profile', label: 'Profile', icon: User, href: '/profile' }
+    { key: 'learn', label: t.learn, icon: Book, href: '/learn' },
+    { key: 'profile', label: t.profile, icon: User, href: '/profile' }
   ] : [
-    { key: 'home', label: 'Home', icon: Home, href: '/' },
-    { key: 'about', label: 'About', icon: Shield, href: '/about' },
-    { key: 'contact', label: 'Contact', icon: Mail, href: '/contact' }
+    { key: 'home', label: t.home, icon: Home, href: '/' },
+    { key: 'about', label: t.about, icon: Shield, href: '/about' },
+    { key: 'contact', label: t.contact, icon: Mail, href: '/contact' }
   ]
 
   const handleNavigation = (href) => {
@@ -34,6 +83,21 @@ export default function Navigation() {
   const handleLogout = () => {
     logout()
     navigate('/')
+  }
+
+  const toggleLanguage = () => {
+    const newLanguage = language === 'en' ? 'rw' : 'en'
+    setLanguage(newLanguage)
+    localStorage.setItem('language', newLanguage)
+    
+    // Use setTimeout to ensure localStorage is saved before reload
+    setTimeout(() => {
+      window.location.href = window.location.href
+    }, 100)
+  }
+
+  const getLanguageDisplay = () => {
+    return language === 'en' ? t.english : t.kinyarwanda
   }
 
   return (
@@ -48,7 +112,7 @@ export default function Navigation() {
               </div>
               <div>
                 <h1 className="text-2xl font-light text-slate-900">AflaGuard</h1>
-                <p className="text-sm font-light text-emerald-600">Professional</p>
+                <p className="text-sm font-light text-emerald-600">{t.professional}</p>
               </div>
             </div>
           </div>
@@ -73,18 +137,22 @@ export default function Navigation() {
 
           {/* User Menu */}
           <div className="flex items-center space-x-4">
+            {/* Language Selector - Always visible */}
+            <div className="relative group">
+              <button
+                onClick={toggleLanguage}
+                className="flex items-center space-x-2 p-3 rounded-2xl bg-white/80 backdrop-blur-xl hover:bg-white/90 transition-all duration-300 cursor-pointer shadow-lg border border-white/30"
+                title={`${t.switchTo} ${language === 'en' ? t.kinyarwanda : t.english}`}
+              >
+                <Globe className="w-5 h-5 text-slate-600 group-hover:text-slate-900" />
+                <span className="text-sm font-medium text-slate-600 group-hover:text-slate-900 hidden sm:inline">
+                  {getLanguageDisplay()}
+                </span>
+              </button>
+            </div>
+
             {user ? (
               <div className="flex items-center space-x-4">
-                {/* Notifications */}
-                <div className="relative group">
-                  <div className="p-3 rounded-2xl bg-white/80 backdrop-blur-xl hover:bg-white/90 transition-all duration-300 cursor-pointer shadow-lg border border-white/30">
-                    <Bell className="w-5 h-5 text-slate-600 group-hover:text-slate-900" />
-                  </div>
-                  <span className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium shadow-lg">
-                    3
-                  </span>
-                </div>
-
                 {/* User Avatar & Info */}
                 <div className="flex items-center space-x-3 px-4 py-2 rounded-2xl bg-white/80 backdrop-blur-xl shadow-lg border border-white/30">
                   <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg">
@@ -103,7 +171,7 @@ export default function Navigation() {
                   className="flex items-center space-x-2 px-4 py-3 rounded-2xl bg-white/80 backdrop-blur-xl hover:bg-white/90 text-slate-600 hover:text-slate-900 font-medium transition-all duration-300 shadow-lg border border-white/30"
                 >
                   <LogOut className="w-4 h-4" />
-                  <span className="hidden sm:inline">Logout</span>
+                  <span className="hidden sm:inline">{t.logout}</span>
                 </button>
               </div>
             ) : (
@@ -114,7 +182,7 @@ export default function Navigation() {
                   className="flex items-center space-x-2 px-6 py-3 rounded-2xl bg-white/80 backdrop-blur-xl hover:bg-white/90 text-slate-600 hover:text-slate-900 font-medium transition-all duration-300 shadow-lg border border-white/30"
                 >
                   <LogIn className="w-4 h-4" />
-                  <span className="hidden sm:inline">Login</span>
+                  <span className="hidden sm:inline">{t.login}</span>
                 </button>
                 
                 {/* Register Button */}
@@ -123,7 +191,7 @@ export default function Navigation() {
                   className="flex items-center space-x-2 px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
                 >
                   <UserPlus className="w-4 h-4" />
-                  <span className="hidden sm:inline">Register</span>
+                  <span className="hidden sm:inline">{t.register}</span>
                 </button>
               </div>
             )}
@@ -156,6 +224,15 @@ export default function Navigation() {
                   <span>{item.label}</span>
                 </button>
               ))}
+
+              {/* Mobile Language Selector */}
+              <button
+                onClick={toggleLanguage}
+                className="w-full flex items-center space-x-3 px-6 py-4 rounded-2xl font-medium text-slate-600 hover:text-slate-900 hover:bg-white/70 hover:backdrop-blur-xl hover:border hover:border-white/30 transition-all duration-300"
+              >
+                <Globe className="w-5 h-5" />
+                <span>{getLanguageDisplay()}</span>
+              </button>
               
               {/* Mobile Auth Buttons */}
               {!user && (
@@ -165,14 +242,14 @@ export default function Navigation() {
                     className="w-full flex items-center justify-center space-x-2 px-6 py-4 rounded-2xl bg-white/80 backdrop-blur-xl text-slate-600 font-medium shadow-lg border border-white/30"
                   >
                     <LogIn className="w-5 h-5" />
-                    <span>Login</span>
+                    <span>{t.login}</span>
                   </button>
                   <button 
                     onClick={() => handleNavigation('/auth/register')}
                     className="w-full flex items-center justify-center space-x-2 px-6 py-4 rounded-2xl bg-emerald-600 text-white font-medium shadow-lg"
                   >
                     <UserPlus className="w-5 h-5" />
-                    <span>Register</span>
+                    <span>{t.register}</span>
                   </button>
                 </div>
               )}

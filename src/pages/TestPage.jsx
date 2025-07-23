@@ -3,6 +3,7 @@ import { useApp } from '../contexts/AppContext';
 
 const CreateTestPage = () => {
   const { user } = useApp();
+  const [language, setLanguage] = useState('en');
   const [formData, setFormData] = useState({
     batchId: '',
     supplier: '',
@@ -12,12 +13,103 @@ const CreateTestPage = () => {
     laboratoryEmail: ''
   });
 
- 
   const [laboratoryUsers, setLaboratoryUsers] = useState([]);
   const [selectedLab, setSelectedLab] = useState(null);
   const [showLabDropdown, setShowLabDropdown] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
+
+  // Load language from localStorage on component mount
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('language')
+    if (savedLanguage) {
+      setLanguage(savedLanguage)
+    }
+  }, [])
+
+  // Translation object
+  const translations = {
+    en: {
+      // Page header
+      createNewTest: 'Create New Test',
+      submitGrainTesting: 'Submit grain testing information with laboratory assignment',
+      
+      // Form sections
+      batchInformation: 'Batch Information',
+      laboratoryAssignment: 'Laboratory Assignment',
+      
+      // Form fields
+      batchId: 'Batch ID',
+      supplier: 'Supplier',
+      date: 'Date',
+      selectLaboratory: 'Select Laboratory',
+      
+      // Placeholders
+      enterBatchId: 'Enter batch ID',
+      enterSupplierName: 'Enter supplier name',
+      selectLabPlaceholder: 'Select a laboratory...',
+      
+      // Laboratory dropdown
+      loadingLaboratories: 'Loading laboratories...',
+      noLaboratoriesFound: 'No laboratories found',
+      
+      // Selected lab info
+      selectedLaboratory: 'Selected Laboratory:',
+      email: 'Email:',
+      organization: 'Organization:',
+      
+      // Buttons and actions
+      createTest: 'Create Test',
+      submitting: 'Submitting...',
+      
+      // Success/error messages
+      testCreatedSuccess: 'Test created successfully!',
+      errorPrefix: 'Error:',
+      failedToCreateTest: 'Failed to create test',
+      errorCreatingTest: 'Error creating test. Please try again.'
+    },
+    rw: {
+      // Page header
+      createNewTest: 'Kurema Igerageza Rishya',
+      submitGrainTesting: 'Kwinjiza amakuru yo gupima ibinyampeke hamwe no guhagararira ubushakashatsi',
+      
+      // Form sections
+      batchInformation: 'Amakuru ya Batch',
+      laboratoryAssignment: 'Guhagararira Ubushakashatsi',
+      
+      // Form fields
+      batchId: 'ID ya Batch',
+      supplier: 'Uwatanze',
+      date: 'Itariki',
+      selectLaboratory: 'Hitamo Ubushakashatsi',
+      
+      // Placeholders
+      enterBatchId: 'Injiza ID ya batch',
+      enterSupplierName: 'Injiza izina ry\'uwatanze',
+      selectLabPlaceholder: 'Hitamo ubushakashatsi...',
+      
+      // Laboratory dropdown
+      loadingLaboratories: 'Gukura ubushakashatsi...',
+      noLaboratoriesFound: 'Nta bushakashatsi bwaboneka',
+      
+      // Selected lab info
+      selectedLaboratory: 'Ubushakashatsi Bwahitanwe:',
+      email: 'Imeri:',
+      organization: 'Ikigo:',
+      
+      // Buttons and actions
+      createTest: 'Kurema Igerageza',
+      submitting: 'Kwinjiza...',
+      
+      // Success/error messages
+      testCreatedSuccess: 'Igerageza ryaremwe neza!',
+      errorPrefix: 'Ikosa:',
+      failedToCreateTest: 'Kunanirwa kurema igerageza',
+      errorCreatingTest: 'Ikosa mu kurema igerageza. Gerageza ukundi.'
+    }
+  }
+
+  const t = translations[language]
 
   // Fetch laboratory users
   useEffect(() => {
@@ -86,7 +178,7 @@ const CreateTestPage = () => {
       const result = await response.json();
       
       if (response.ok) {
-        alert('Test created successfully!');
+        alert(t.testCreatedSuccess);
         // Reset form
         setFormData({
           batchId: '',
@@ -98,11 +190,11 @@ const CreateTestPage = () => {
         });
         setSelectedLab(null);
       } else {
-        alert(`Error: ${result.message || 'Failed to create test'}`);
+        alert(`${t.errorPrefix} ${result.message || t.failedToCreateTest}`);
       }
     } catch (error) {
       console.error('Error creating test:', error);
-      alert('Error creating test. Please try again.');
+      alert(t.errorCreatingTest);
     } finally {
       setSubmitLoading(false);
     }
@@ -114,10 +206,10 @@ const CreateTestPage = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-light text-gray-800 mb-2">
-            Create New Test
+            {t.createNewTest}
           </h1>
           <p className="text-emerald-600 font-light">
-            Submit grain testing information with laboratory assignment
+            {t.submitGrainTesting}
           </p>
         </div>
 
@@ -127,13 +219,13 @@ const CreateTestPage = () => {
             {/* Batch Information Section */}
             <div className="space-y-4">
               <h2 className="text-xl font-light text-gray-700 border-b border-emerald-200 pb-2">
-                Batch Information
+                {t.batchInformation}
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-gray-600 text-sm font-medium mb-2">
-                    Batch ID
+                    {t.batchId}
                   </label>
                   <input
                     type="text"
@@ -142,13 +234,13 @@ const CreateTestPage = () => {
                     onChange={handleInputChange}
                     required
                     className="w-full px-4 py-3 bg-white/60 backdrop-blur-sm border border-gray-200/60 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-400/50 transition-all duration-300 shadow-sm"
-                    placeholder="Enter batch ID"
+                    placeholder={t.enterBatchId}
                   />
                 </div>
 
                 <div>
                   <label className="block text-gray-600 text-sm font-medium mb-2">
-                    Supplier
+                    {t.supplier}
                   </label>
                   <input
                     type="text"
@@ -157,14 +249,14 @@ const CreateTestPage = () => {
                     onChange={handleInputChange}
                     required
                     className="w-full px-4 py-3 bg-white/60 backdrop-blur-sm border border-gray-200/60 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-400/50 transition-all duration-300 shadow-sm"
-                    placeholder="Enter supplier name"
+                    placeholder={t.enterSupplierName}
                   />
                 </div>
               </div>
 
               <div>
                 <label className="block text-gray-600 text-sm font-medium mb-2">
-                  Date
+                  {t.date}
                 </label>
                 <input
                   type="date"
@@ -177,17 +269,15 @@ const CreateTestPage = () => {
               </div>
             </div>
 
-        
-            
             {/* Laboratory Assignment Section */}
             <div className="space-y-4">
               <h2 className="text-xl font-light text-gray-700 border-b border-emerald-200 pb-2">
-                Laboratory Assignment
+                {t.laboratoryAssignment}
               </h2>
               
               <div className="relative">
                 <label className="block text-gray-600 text-sm font-light mb-2">
-                  Select Laboratory
+                  {t.selectLaboratory}
                 </label>
                 <button
                   type="button"
@@ -201,7 +291,7 @@ const CreateTestPage = () => {
                         <span className="text-emerald-600 ml-2">({selectedLab.organisation})</span>
                       </span>
                     ) : (
-                      <span className="text-gray-400">Select a laboratory...</span>
+                      <span className="text-gray-400">{t.selectLabPlaceholder}</span>
                     )}
                   </span>
                   <svg className={`w-5 h-5 transition-transform text-emerald-600 ${showLabDropdown ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -212,7 +302,7 @@ const CreateTestPage = () => {
                 {showLabDropdown && (
                   <div className="absolute z-10 w-full mt-2 bg-white/90 backdrop-blur-xl border border-gray-200/60 rounded-xl shadow-2xl max-h-60 overflow-y-auto">
                     {loading ? (
-                      <div className="p-4 text-center text-gray-500">Loading laboratories...</div>
+                      <div className="p-4 text-center text-gray-500">{t.loadingLaboratories}</div>
                     ) : laboratoryUsers.length > 0 ? (
                       laboratoryUsers.map((lab) => (
                         <button
@@ -227,7 +317,7 @@ const CreateTestPage = () => {
                         </button>
                       ))
                     ) : (
-                      <div className="p-4 text-center text-gray-500">No laboratories found</div>
+                      <div className="p-4 text-center text-gray-500">{t.noLaboratoriesFound}</div>
                     )}
                   </div>
                 )}
@@ -235,11 +325,10 @@ const CreateTestPage = () => {
 
               {selectedLab && (
                 <div className="mt-4 p-4 bg-emerald-50/60 backdrop-blur-sm border border-emerald-200/60 rounded-xl shadow-sm">
-                  <h4 className="text-gray-700 font-medium mb-2">Selected Laboratory:</h4>
+                  <h4 className="text-gray-700 font-medium mb-2">{t.selectedLaboratory}</h4>
                   <div className="text-gray-600 text-sm space-y-1">
-                    <div><strong>Email:</strong> <span className="text-emerald-700">{selectedLab.email}</span></div>
-                    <div><strong>Organization:</strong> <span className="text-emerald-700">{selectedLab.organisation}</span></div>
-                    
+                    <div><strong>{t.email}</strong> <span className="text-emerald-700">{selectedLab.email}</span></div>
+                    <div><strong>{t.organization}</strong> <span className="text-emerald-700">{selectedLab.organisation}</span></div>
                   </div>
                 </div>
               )}
@@ -256,7 +345,7 @@ const CreateTestPage = () => {
                     : 'bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-700 hover:from-emerald-600 hover:to-emerald-800 shadow-emerald-200/50'
                 }`}
               >
-                {submitLoading ? 'Submitting...' : 'Create Test'}
+                {submitLoading ? t.submitting : t.createTest}
               </button>
             </div>
           </form>

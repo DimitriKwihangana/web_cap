@@ -7,6 +7,7 @@ import BatchDetailModal from './BatchDetailModal'
 
 export default function Dashboard() {
   const { user } = useApp()
+  const [language, setLanguage] = useState('en')
   const [dashboardData, setDashboardData] = useState({
     stats: [],
     recentTests: [],
@@ -15,6 +16,76 @@ export default function Dashboard() {
   const [selectedBatch, setSelectedBatch] = useState(null)
   const [showBatchDetail, setShowBatchDetail] = useState(false)
   const [allBatches, setAllBatches] = useState([]) // Store all batch data for details
+
+  // Load language from localStorage on component mount
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('language')
+    if (savedLanguage) {
+      setLanguage(savedLanguage)
+    }
+  }, [])
+
+  // Translation object
+  const translations = {
+    en: {
+      // Welcome messages
+      welcomeBack: 'Welcome back',
+      todayOverview: "Here's your food safety overview for today",
+      completeOverview: "Here's the complete food safety overview for all users",
+      adminView: 'Administrator View - Showing all system tests',
+      
+      // Stats labels
+      totalTests: 'Total Tests',
+      totalTestsAll: 'Total Tests (All Users)',
+      safeForChildren: 'Safe for Children',
+      safeForChildrenAll: 'Safe for Children (All)',
+      alerts: 'Alerts',
+      alertsSystem: 'Alerts (System-wide)',
+      avgAflatoxin: 'Avg. Aflatoxin',
+      systemAvgAflatoxin: 'System Avg. Aflatoxin',
+      
+      // Safety assessments
+      safeForChildrenResult: 'Safe for Children',
+      adultsOnly: 'Adults Only',
+      animalFeedOnly: 'Animal Feed Only',
+      unsafe: 'Unsafe',
+      
+      // Loading and errors
+      loading: 'Loading dashboard data...',
+      errorFetching: 'Error fetching dashboard data',
+      noData: 'No data available'
+    },
+    rw: {
+      // Welcome messages
+      welcomeBack: 'Murakaza neza',
+      todayOverview: 'Dore incamake yumutekano wibiryo uyu munsi',
+      completeOverview: 'Dore incamake yuzuye yumutekano wibiryo kubakoresha bose',
+      adminView: 'Reba Umuyobozi - Werekana igerageza ryose rya sisitemu',
+      
+      // Stats labels
+      totalTests: 'Igerageza Ryose',
+      totalTestsAll: 'Igerageza Ryose (Abakoresha Bose)',
+      safeForChildren: 'Biryo byiza kubana',
+      safeForChildrenAll: 'Biryo byiza kubana (Byose)',
+      alerts: 'Iburira',
+      alertsSystem: 'Iburira (Muri Sisitemu Yose)',
+      avgAflatoxin: 'Aflatoxin Yimpuzandengo',
+      systemAvgAflatoxin: 'Aflatoxin Yimpuzandengo ya Sisitemu',
+      
+      // Safety assessments
+      safeForChildrenResult: 'Biryo byiza kubana',
+      adultsOnly: 'Bakuze Gusa',
+      animalFeedOnly: 'Indyo zinyamaswa Gusa',
+      unsafe: 'Birateje Akaga',
+      
+      // Loading and errors
+      loading: 'Gukura amakuru yikibaho...',
+      errorFetching: 'Ikosa mukugura amakuru yikibaho',
+      noData: 'Nta makuru aboneka'
+    }
+  }
+
+  const t = translations[language]
 
   // Handle clicking on a test to show details
   const handleTestClick = (testId) => {
@@ -52,13 +123,13 @@ export default function Dashboard() {
     const level = parseFloat(aflatoxinLevel) || 0
     
     if (level >= 0 && level <= 5) {
-      return { result: 'Safe for Children', color: 'green' }
+      return { result: t.safeForChildrenResult, color: 'green' }
     } else if (level > 5 && level <= 10) {
-      return { result: 'Adults Only', color: 'yellow' }
+      return { result: t.adultsOnly, color: 'yellow' }
     } else if (level > 10 && level <= 20) {
-      return { result: 'Animal Feed Only', color: 'orange' }
+      return { result: t.animalFeedOnly, color: 'orange' }
     } else {
-      return { result: 'Unsafe', color: 'red' }
+      return { result: t.unsafe, color: 'red' }
     }
   }
 
@@ -120,28 +191,28 @@ export default function Dashboard() {
 
     return [
       { 
-        label: user?.type === 'admin' ? 'Total Tests (All Users)' : 'Total Tests', 
+        label: user?.type === 'admin' ? t.totalTestsAll : t.totalTests, 
         value: totalTests.toString(), 
         change: totalTests > 0 ? '+' + Math.floor(Math.random() * 20) + '%' : '0%', 
         icon: 'FlaskConical', 
         color: 'blue' 
       },
       { 
-        label: user?.type === 'admin' ? 'Safe for Children (All)' : 'Safe for Children', 
+        label: user?.type === 'admin' ? t.safeForChildrenAll : t.safeForChildren, 
         value: safeForChildren.toString(), 
         change: safeForChildren > 0 ? '+' + Math.floor(Math.random() * 15) + '%' : '0%', 
         icon: 'CheckCircle', 
         color: 'green' 
       },
       { 
-        label: user?.type === 'admin' ? 'Alerts (System-wide)' : 'Alerts', 
+        label: user?.type === 'admin' ? t.alertsSystem : t.alerts, 
         value: (alertCount + warningCount).toString(), 
         change: alertCount > 0 ? '+' + Math.floor(Math.random() * 10) + '%' : '0%', 
         icon: 'AlertTriangle', 
         color: 'red' 
       },
       { 
-        label: user?.type === 'admin' ? 'System Avg. Aflatoxin' : 'Avg. Aflatoxin', 
+        label: user?.type === 'admin' ? t.systemAvgAflatoxin : t.avgAflatoxin, 
         value: avgAflatoxin.toFixed(1) + ' ppb', 
         change: '+' + (Math.random() * 2).toFixed(1) + '%', 
         icon: 'Target', 
@@ -200,10 +271,10 @@ export default function Dashboard() {
         // Set empty data if API fails
         setDashboardData({
           stats: [
-            { label: user?.type === 'admin' ? 'Total Tests (All Users)' : 'Total Tests', value: '0', change: '0%', icon: 'FlaskConical', color: 'blue' },
-            { label: user?.type === 'admin' ? 'Safe for Children (All)' : 'Safe for Children', value: '0', change: '0%', icon: 'CheckCircle', color: 'green' },
-            { label: user?.type === 'admin' ? 'Alerts (System-wide)' : 'Alerts', value: '0', change: '0%', icon: 'AlertTriangle', color: 'red' },
-            { label: user?.type === 'admin' ? 'System Avg. Aflatoxin' : 'Avg. Aflatoxin', value: '0 ppb', change: '0%', icon: 'Target', color: 'purple' }
+            { label: user?.type === 'admin' ? t.totalTestsAll : t.totalTests, value: '0', change: '0%', icon: 'FlaskConical', color: 'blue' },
+            { label: user?.type === 'admin' ? t.safeForChildrenAll : t.safeForChildren, value: '0', change: '0%', icon: 'CheckCircle', color: 'green' },
+            { label: user?.type === 'admin' ? t.alertsSystem : t.alerts, value: '0', change: '0%', icon: 'AlertTriangle', color: 'red' },
+            { label: user?.type === 'admin' ? t.systemAvgAflatoxin : t.avgAflatoxin, value: '0 ppb', change: '0%', icon: 'Target', color: 'purple' }
           ],
           recentTests: [],
           loading: false
@@ -214,10 +285,10 @@ export default function Dashboard() {
       // Set empty data on error
       setDashboardData({
         stats: [
-          { label: user?.type === 'admin' ? 'Total Tests (All Users)' : 'Total Tests', value: '0', change: '0%', icon: 'FlaskConical', color: 'blue' },
-          { label: user?.type === 'admin' ? 'Safe for Children (All)' : 'Safe for Children', value: '0', change: '0%', icon: 'CheckCircle', color: 'green' },
-          { label: user?.type === 'admin' ? 'Alerts (System-wide)' : 'Alerts', value: '0', change: '0%', icon: 'AlertTriangle', color: 'red' },
-          { label: user?.type === 'admin' ? 'System Avg. Aflatoxin' : 'Avg. Aflatoxin', value: '0 ppb', change: '0%', icon: 'Target', color: 'purple' }
+          { label: user?.type === 'admin' ? t.totalTestsAll : t.totalTests, value: '0', change: '0%', icon: 'FlaskConical', color: 'blue' },
+          { label: user?.type === 'admin' ? t.safeForChildrenAll : t.safeForChildren, value: '0', change: '0%', icon: 'CheckCircle', color: 'green' },
+          { label: user?.type === 'admin' ? t.alertsSystem : t.alerts, value: '0', change: '0%', icon: 'AlertTriangle', color: 'red' },
+          { label: user?.type === 'admin' ? t.systemAvgAflatoxin : t.avgAflatoxin, value: '0 ppb', change: '0%', icon: 'Target', color: 'purple' }
         ],
         recentTests: [],
         loading: false
@@ -227,7 +298,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchDashboardData()
-  }, [user])
+  }, [user, language]) // Re-fetch when language changes to update assessments
 
   if (dashboardData.loading) {
     return (
@@ -252,20 +323,17 @@ export default function Dashboard() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-light text-gray-900">
-          Welcome back, {user?.name || user?.email}!
+          {t.welcomeBack}, {user?.name || user?.email}!
         </h1>
         <p className="text-gray-600 mt-2">
-          {user?.type === 'admin' 
-            ? "Here's the complete food safety overview for all users"
-            : "Here's your food safety overview for today"
-          }
+          {user?.type === 'admin' ? t.completeOverview : t.todayOverview}
         </p>
         {user?.type === 'admin' && (
           <div className="mt-4 p-3 bg-gradient-to-r from-blue-50/80 to-indigo-50/80 rounded-2xl border border-blue-200/50 backdrop-blur-sm">
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
               <span className="text-sm text-blue-700 font-medium">
-                Administrator View - Showing all system tests
+                {t.adminView}
               </span>
             </div>
           </div>
