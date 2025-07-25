@@ -20,7 +20,7 @@ export default function HomePage() {
       protectFoodSafety: 'Protect Food Safety',
       withIntelligence: 'with Intelligence',
       heroDescription: 'Revolutionary aflatoxin prediction platform powered by machine learning. Ensure food safety, access premium markets, and protect consumers worldwide.',
-      startFreeTrial: 'Start Free Trial',
+      startFreeTrial: 'Start for free',
       learnMore: 'Learn More',
       
       // Product Preview
@@ -248,7 +248,7 @@ export default function HomePage() {
                       <div className="text-center">
                         <CheckCircle className="w-12 h-12 text-green-600 mx-auto mb-4" />
                         <div className="text-green-800 font-semibold text-lg">{t.safeToConsume}</div>
-                        <div className="text-green-600 text-sm mt-2">{t.confidence}: 99.2%</div>
+                        <div className="text-green-600 text-sm mt-2">{t.confidence}: 70.2%</div>
                       </div>
                     </div>
                   </div>
