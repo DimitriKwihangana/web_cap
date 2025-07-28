@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Shield, Users, BarChart3, Book, Zap, Target, Award, TrendingUp, CheckCircle, Globe, UserPlus, Phone, ArrowRight, Sparkles } from 'lucide-react'
+import { Shield, Users, BarChart3, Book, Zap, Target, Award, TrendingUp, CheckCircle, Globe, UserPlus, Phone, ArrowRight, Sparkles, FileText, Lock, Scale, Mail, MapPin, ExternalLink } from 'lucide-react'
 
 export default function HomePage() {
   const [language, setLanguage] = useState('en')
@@ -12,10 +12,16 @@ export default function HomePage() {
     }
   }, [])
 
-  // Translation object
+  // Function to navigate to legal agreements page
+  const navigateToLegal = () => {
+    // In a real React Router setup, you would use navigate('/legal') or <Link to="/legal">
+    // For now, this is a placeholder that you can replace with your routing solution
+    window.location.href = '/legal'
+  }
+
   const translations = {
     en: {
-      // Badge and Hero
+      
       aiPoweredPlatform: 'AI-Powered Detection Platform',
       protectFoodSafety: 'Protect Food Safety',
       withIntelligence: 'with Intelligence',
@@ -23,7 +29,7 @@ export default function HomePage() {
       startFreeTrial: 'Start for free',
       learnMore: 'Learn More',
       
-      // Product Preview
+      
       safeToConsume: 'Safe to Consume',
       confidence: 'Confidence',
       
@@ -71,7 +77,44 @@ export default function HomePage() {
       ctaSubtitle: 'Food Safety Standards?',
       ctaDescription: 'Join hundreds of organizations already using AflaGuard Pro to ensure food safety and access premium markets.',
       startYourFreeTrial: 'Start Your Free Trial',
-      scheduleDemo: 'Schedule Demo'
+      scheduleDemo: 'Schedule Demo',
+
+      // Footer Section
+      footerTitle: 'Aflaguard',
+      footerDescription: 'Protecting food safety with intelligent aflatoxin prediction for institutions across Rwanda and East Africa.',
+      
+      // Footer Links
+      product: 'Product',
+      features: 'Features',
+      pricing: 'Pricing',
+      documentation: 'Documentation',
+      
+      company: 'Company',
+      aboutUs: 'About Us',
+      careers: 'Careers',
+      contact: 'Contact',
+      blog: 'Blog',
+      
+      legal: 'Legal',
+      termsOfService: 'Terms of Service',
+      privacyPolicy: 'Privacy Policy',
+      legalAgreements: 'Legal Agreements',
+      compliance: 'Compliance',
+      
+      support: 'Support',
+      helpCenter: 'Help Center',
+      api: 'API Reference',
+      statusPage: 'Status Page',
+      
+      // Contact Info
+      contactEmail: 'support@aflaguard.rw',
+      contactPhone: '+250-78227-2629',
+      address: 'Kigali, Rwanda',
+      
+     
+      copyright: '© 2025 Aflaguard Systems. All rights reserved.',
+      developedBy: 'Developed by Dimitri Kwihangana ',
+      alu: 'African Leadership University'
     },
     rw: {
       // Badge and Hero
@@ -100,7 +143,7 @@ export default function HomePage() {
       globalTitle: 'Ibipimo byamahanga',
       globalDesc: 'Kubahiriza amategeko mpuzamahanga yumutekano wibiryo',
       
-      // User Types Section
+      
       builtForStakeholders: 'Byubatswe kuri buri wese',
       stakeholdersDescription: 'Ibisubizo byagenewe inzego, ibigo bikora ibiryo, nubushakashatsi',
       
@@ -130,7 +173,44 @@ export default function HomePage() {
       ctaSubtitle: 'Ibipimo byawe byumutekano wibiryo?',
       ctaDescription: 'Fataana nibigo byinshi bikoresha AflaGuard Pro kugirango bemeze umutekano wibiryo kandi binjire mumasoko akomeye.',
       startYourFreeTrial: 'Tangira Igerageza ryawe kubuntu',
-      scheduleDemo: 'Shiraho Inyigisho'
+      scheduleDemo: 'Shiraho Inyigisho',
+
+      // Footer Section
+      footerTitle: 'Aflaguard',
+      footerDescription: 'Kurinda umutekano w\'ibiryo hamwe n\'ubwenge bwo guhanura aflatoxin ku nzego muri Rwanda n\'Afurika y\'Iburasirazuba.',
+      
+      // Footer Links
+      product: 'Igicuruzwa',
+      features: 'Ibiranga',
+      pricing: 'Ibiciro',
+      documentation: 'Inyandiko',
+      
+      company: 'Ikigo',
+      aboutUs: 'Ibibabariye',
+      careers: 'Akazi',
+      contact: 'Itumanaho',
+      blog: 'Blog',
+      
+      legal: 'Amategeko',
+      termsOfService: 'Amabwiriza yo Koresha',
+      privacyPolicy: 'Politiki y\'Ubwigenge',
+      legalAgreements: 'Amasezerano y\'Amategeko',
+      compliance: 'Kubahiriza Amategeko',
+      
+      support: 'Ubufasha',
+      helpCenter: 'Ikigo cy\'Ubufasha',
+      api: 'API Reference',
+      statusPage: 'Urubuga rw\'Imimerere',
+      
+      // Contact Info
+      contactEmail: 'ubufasha@aflaguard.rw',
+      contactPhone: '+250-XXX-XXXX',
+      address: 'Kigali, Rwanda',
+      
+      // Copyright
+      copyright: '© 2024 Aflaguard Systems. Uburenganzira bwose burahagarikwa.',
+      developedBy: 'Byakozwe na Dimitri Kwihangana & Kevin Sebineza',
+      alu: 'Kaminuza y\'Ubuyobozi bw\'Afurika'
     }
   }
 
@@ -180,6 +260,32 @@ export default function HomePage() {
     }
   ]
 
+  const footerLinks = {
+    product: [
+      { name: t.features, href: 'legal' },
+      { name: t.pricing, href: 'legal' },
+      { name: t.documentation, href: 'legal' },
+      { name: t.api, href: '#api' }
+    ],
+    company: [
+      { name: t.aboutUs, href: 'legal' },
+      { name: t.careers, href: 'legal' },
+      { name: t.contact, href: 'legal' },
+      { name: t.blog, href: 'legal' }
+    ],
+    legal: [
+      { name: t.termsOfService, href: 'legal' },
+      { name: t.privacyPolicy, href: 'legal' },
+      { name: t.legalAgreements, href: 'legal', onClick: navigateToLegal },
+      { name: t.compliance, href: 'legal' }
+    ],
+    support: [
+      { name: t.helpCenter, href: '#help' },
+      { name: t.api, href: '#api-docs' },
+      { name: t.statusPage, href: '#status' }
+    ]
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-green-50 relative overflow-hidden">
       {/* Background Elements */}
@@ -189,17 +295,13 @@ export default function HomePage() {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-green-400/10 to-emerald-400/10 rounded-full blur-3xl"></div>
       </div>
 
-      {/* Hero Section */}
+   
       <section className="relative pt-24 pb-32">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center space-y-12">
-            {/* Badge */}
-            <div className="inline-flex items-center px-4 py-2 bg-white/60 backdrop-blur-xl rounded-full border border-white/20 shadow-lg">
-              <Sparkles className="w-4 h-4 mr-2 text-emerald-600" />
-              <span className="text-sm font-medium text-slate-700">{t.aiPoweredPlatform}</span>
-            </div>
+            
 
-            {/* Main Heading */}
+        
             <div className="space-y-6 max-w-5xl mx-auto">
               <h1 className="text-6xl lg:text-7xl font-light text-slate-900 leading-tight tracking-tight">
                 {t.protectFoodSafety}
@@ -351,6 +453,132 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Footer Section */}
+      <footer className="relative bg-slate-900 text-white">
+        <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/20 to-green-900/20"></div>
+        <div className="relative max-w-7xl mx-auto px-6 lg:px-8 py-20">
+          <div className="grid lg:grid-cols-5 gap-12">
+            {/* Company Info */}
+            <div className="lg:col-span-2 space-y-8">
+              <div>
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center">
+                    <Shield className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold">{t.footerTitle}</h3>
+                </div>
+                <p className="text-slate-300 leading-relaxed">
+                  {t.footerDescription}
+                </p>
+              </div>
+
+              {/* Contact Info */}
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3">
+                  <Mail className="w-5 h-5 text-emerald-400" />
+                  <span className="text-slate-300">{t.contactEmail}</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Phone className="w-5 h-5 text-emerald-400" />
+                  <span className="text-slate-300">{t.contactPhone}</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <MapPin className="w-5 h-5 text-emerald-400" />
+                  <span className="text-slate-300">{t.address}</span>
+                </div>
+              </div>
+
+              {/* Language Toggle */}
+              <button 
+                onClick={() => setLanguage(language === 'en' ? 'rw' : 'en')}
+                className="flex items-center space-x-2 px-4 py-2 bg-white/10 backdrop-blur-xl rounded-xl border border-white/10 hover:bg-white/20 transition-colors"
+              >
+                <Globe className="w-4 h-4" />
+                <span>{language === 'en' ? 'Kinyarwanda' : 'English'}</span>
+              </button>
+            </div>
+
+            {/* Footer Links */}
+            <div className="lg:col-span-3 grid md:grid-cols-3 gap-8">
+              {/* Product Links */}
+              <div>
+                <h4 className="font-semibold text-white mb-6">{t.product}</h4>
+                <ul className="space-y-3">
+                  {footerLinks.product.map((link, index) => (
+                    <li key={index}>
+                      <a 
+                        href={link.href} 
+                        className="text-slate-300 hover:text-emerald-400 transition-colors flex items-center space-x-1"
+                      >
+                        <span>{link.name}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Company Links */}
+              <div>
+                <h4 className="font-semibold text-white mb-6">{t.company}</h4>
+                <ul className="space-y-3">
+                  {footerLinks.company.map((link, index) => (
+                    <li key={index}>
+                      <a 
+                        href={link.href} 
+                        className="text-slate-300 hover:text-emerald-400 transition-colors"
+                      >
+                        {link.name}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Legal Links */}
+              <div>
+                <h4 className="font-semibold text-white mb-6">{t.legal}</h4>
+                <ul className="space-y-3">
+                  {footerLinks.legal.map((link, index) => (
+                    <li key={index}>
+                      {link.onClick ? (
+                        <button 
+                          onClick={link.onClick}
+                          className="text-slate-300 hover:text-emerald-400 transition-colors flex items-center space-x-2 group"
+                        >
+                          <span>{link.name}</span>
+                          <ExternalLink className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                        </button>
+                      ) : (
+                        <a 
+                          href={link.href} 
+                          className="text-slate-300 hover:text-emerald-400 transition-colors"
+                        >
+                          {link.name}
+                        </a>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Bar */}
+          <div className="border-t border-slate-700 mt-16 pt-8">
+            <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+              <div className="text-slate-400 text-sm">
+                {t.copyright}
+              </div>
+              <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4 text-slate-400 text-sm">
+                <span>{t.developedBy}</span>
+                <span className="hidden md:block">•</span>
+                <span>{t.alu}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }

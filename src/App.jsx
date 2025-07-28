@@ -13,6 +13,7 @@ import MarketplacePage from './pages/MarketPlace'
 import OrderManagementDashboard from './pages/OrderManagement'
 import TestPage from './pages/TestPage'
 import ProfilePage from './pages/ProfilePage'
+import LegalAgreementsPage from './pages/Licence'
 
 function App() {
   return (
@@ -50,6 +51,10 @@ function App() {
           <Route path="/test" element={
             <ProtectedRoute>
               <TestPage /></ProtectedRoute>
+          } />
+          <Route path="/legal" element={
+            <ProtectedRoute>
+              <LegalAgreementsPage /></ProtectedRoute>
           } />
            <Route path="/profile" element={
             <ProtectedRoute>
