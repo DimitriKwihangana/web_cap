@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Zap, FileText, Database, Book, Brain, Settings, Users, Shield, ShoppingCart, Package } from 'lucide-react'
+import { Zap, FileText, Database, Book, Brain, Settings, Users, Shield, ShoppingCart, Package, TestTube } from 'lucide-react'
 import Button from '../ui/Button'
 import { useApp } from '../../contexts/AppContext'
 
@@ -28,6 +28,7 @@ export default function QuickActions() {
       // Base actions
       newPrediction: 'New Prediction',
       test: 'Test',
+      selfTesting: 'Self Testing',
       learningCenter: 'Learning Center',
       
       // Conditional actions
@@ -59,6 +60,7 @@ export default function QuickActions() {
       // Base actions
       newPrediction: 'Guhanura Gushya',
       test: 'Gupima',
+      selfTesting: 'Kwipima',
       learningCenter: 'Ikigo cyo Kwiga',
       
       // Conditional actions
@@ -92,6 +94,12 @@ export default function QuickActions() {
       icon: Zap, 
       label: user?.type === 'laboratory' ? t.newPrediction : t.test, 
       href: user?.type === 'laboratory' ? '/predict' : '/test' 
+    },
+    { 
+      icon: TestTube, 
+      label: t.selfTesting, 
+      href: '/allpredict',
+      
     },
     { icon: Book, label: t.learningCenter, href: '/learn' }
   ]

@@ -14,6 +14,7 @@ import OrderManagementDashboard from './pages/OrderManagement'
 import TestPage from './pages/TestPage'
 import ProfilePage from './pages/ProfilePage'
 import LegalAgreementsPage from './pages/Licence'
+import PredictionAll from './pages/NewPrediction' 
 
 function App() {
   return (
@@ -48,7 +49,11 @@ function App() {
               <PredictPage />
             </ProtectedRoute>
           } />
-          <Route path="/test" element={
+          <Route path="/allpredict" element={
+            <ProtectedRoute>
+              <PredictionAll /></ProtectedRoute>
+          } />
+           <Route path="/test" element={
             <ProtectedRoute>
               <TestPage /></ProtectedRoute>
           } />
@@ -61,6 +66,7 @@ function App() {
               <ProfilePage /></ProtectedRoute>
           } />
           <Route path="/learn" element={<LearnPage />} />
+
         </Routes>
       </Layout>
     </AppProvider>

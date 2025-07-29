@@ -2,7 +2,7 @@ import { CheckCircle, AlertTriangle, Info, Clock } from 'lucide-react'
 import Card from '../ui/Card'
 
 export default function RecentTests({ tests, onTestClick }) {
-  console.log(tests,"____________")
+  console.log(tests,"______")
   
   const getAflatoxinAssessment = (aflatoxinLevel) => {
     const level = parseFloat(aflatoxinLevel) || 0

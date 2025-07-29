@@ -16,14 +16,14 @@ export default function BatchDetailModal({ isOpen, onClose, batch, user, onBatch
 
   if (!isOpen || !batch) return null
 
-  // Check if current user owns this batch
+
   const isOwner = user && (
     batch.userId === user.id || 
     batch.userName === user.email || 
     batch.userName === user.username
   )
 
-  // Check if user is cooperative type and owns the batch
+  
   const canAccessMarketplace = isOwner && user?.type === 'cooperative'
 
   // Calculate aflatoxin assessment
@@ -273,7 +273,6 @@ export default function BatchDetailModal({ isOpen, onClose, batch, user, onBatch
             </div>
           </div>
 
-          {/* Marketplace Section - Only show for cooperative users who own the batch */}
           {canAccessMarketplace && (
             <div className="mb-8">
               <div className="bg-white/40 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-lg">
@@ -283,7 +282,7 @@ export default function BatchDetailModal({ isOpen, onClose, batch, user, onBatch
                     Marketplace
                   </h3>
                   
-                  {/* Market Status Badge */}
+                 
                   {batch.isOnMarket ? (
                     <div className="flex items-center space-x-3">
                       <div className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium text-green-700 bg-green-100/80 border border-green-200/50">
@@ -304,7 +303,7 @@ export default function BatchDetailModal({ isOpen, onClose, batch, user, onBatch
                   )}
                 </div>
 
-                {/* Market Actions */}
+      
                 {!batch.isOnMarket && (
                   <div>
                     {!isMarketplaceOpen ? (
@@ -519,7 +518,7 @@ export default function BatchDetailModal({ isOpen, onClose, batch, user, onBatch
             </div>
           </div>
 
-          {/* Grain Quality Metrics */}
+        
           <div className="mb-8">
             <h3 className="text-2xl font-light text-gray-900 mb-6 flex items-center">
               <Droplets className="w-6 h-6 mr-3 text-blue-600" />
@@ -527,7 +526,7 @@ export default function BatchDetailModal({ isOpen, onClose, batch, user, onBatch
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {/* Moisture Content */}
+              
               <div className="bg-white/40 backdrop-blur-sm border border-white/20 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-white/50">
                 <div className="mb-4">
                   <span className="text-sm font-medium text-gray-600">Moisture Content</span>
