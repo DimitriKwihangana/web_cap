@@ -15,6 +15,8 @@ import TestPage from './pages/TestPage'
 import ProfilePage from './pages/ProfilePage'
 import LegalAgreementsPage from './pages/Licence'
 import PredictionAll from './pages/NewPrediction' 
+import AdminUsersManagement from './pages/adminUsers'
+import AdminAnalyticsDashboard from './pages/analytics'
 
 function App() {
   return (
@@ -64,6 +66,14 @@ function App() {
            <Route path="/profile" element={
             <ProtectedRoute>
               <ProfilePage /></ProtectedRoute>
+          } />
+           <Route path="/admin/users" element={
+            <ProtectedRoute>
+              <AdminUsersManagement /></ProtectedRoute>
+          } />
+           <Route path="/admin/analytics" element={
+            <ProtectedRoute>
+              <AdminAnalyticsDashboard /></ProtectedRoute>
           } />
           <Route path="/learn" element={<LearnPage />} />
 

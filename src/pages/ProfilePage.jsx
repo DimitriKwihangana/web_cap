@@ -180,7 +180,7 @@ export default function ProfilePage() {
           </ProfileSection>
         </div>
 
-        {/* Account Status */}
+      
         <div className="bg-white/90 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/20 p-8">
           <div className="flex items-center space-x-3 mb-6">
             <div className="bg-gradient-to-br from-emerald-500 to-green-600 p-3 rounded-2xl shadow-lg">

@@ -37,7 +37,7 @@ export default function QuickActions() {
       finetune: 'Fine-tune Model',
       manageUsers: 'Manage Users',
       systemSettings: 'System Settings',
-      securityCenter: 'Security Center',
+      securityCenter: 'Analytics',
       
       // User types
       laboratory: 'laboratory',
@@ -69,7 +69,7 @@ export default function QuickActions() {
       finetune: 'Kuzamura Moderi',
       manageUsers: 'Gucunga Abakoresha',
       systemSettings: 'Igenamiterere rya Sisitemu',
-      securityCenter: 'Ikigo cy\'Umutekano',
+      securityCenter: 'Imibare',
       
       // User types
       laboratory: 'ubushakashatsi',
@@ -140,19 +140,14 @@ export default function QuickActions() {
         icon: Users,
         label: t.manageUsers,
         href: '/admin/users',
-        className: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 border-blue-500'
+      
       })
-      conditionalActions.push({
-        icon: Settings,
-        label: t.systemSettings,
-        href: '/admin/settings',
-        className: 'bg-gradient-to-r from-gray-500 to-gray-600 text-white hover:from-gray-600 hover:to-gray-700 border-gray-500'
-      })
+      
       conditionalActions.push({
         icon: Shield,
         label: t.securityCenter,
-        href: '/admin/security',
-        className: 'bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 border-red-500'
+        href: '/admin/analytics',
+        
       })
     }
 
